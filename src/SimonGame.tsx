@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
-import { configureStore } from "@reduxjs/toolkit";
+import { useReducer, useEffect } from "react";
 
 import "./App.css";
+import { playSound } from "./utils/sound";
 // ==================== CONSTANTS ====================
 const GAME_STATUS = {
   IDLE: "IDLE",
@@ -57,7 +57,7 @@ const initialState = {
 };
 
 // ==================== REDUCER ====================
-const simonReducer = (state = initialState, action) => {
+const simonReducer = (state, action) => {
   switch (action.type) {
     case START_GAME:
       const firstColor = Math.floor(Math.random() * 4);
@@ -174,45 +174,11 @@ const simonReducer = (state = initialState, action) => {
   }
 };
 
-// ==================== CREATE STORE ====================
-const store = configureStore({ reducer: simonReducer });
-
-// ==================== HELPER FUNCTIONS ====================
-const playSound = (colorIndex: number) => {
-  const frequencies = [329.63, 261.63, 220, 164.81]; // E4, C4, A3, E3
-  const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-  const oscillator = audioContext.createOscillator();
-  const gainNode = audioContext.createGain();
-
-  oscillator.connect(gainNode);
-  gainNode.connect(audioContext.destination);
-
-  oscillator.frequency.value = frequencies[colorIndex];
-  oscillator.type = "sine";
-
-  gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-  gainNode.gain.exponentialRampToValueAtTime(
-    0.01,
-    audioContext.currentTime + 0.5,
-  );
-
-  oscillator.start(audioContext.currentTime);
-  oscillator.stop(audioContext.currentTime + 0.5);
-};
-
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 // ==================== REACT COMPONENT ====================
 const SimonGame = () => {
-  const [state, setState] = useState(store.getState());
-
-  // Subscribe to store updates
-  useEffect(() => {
-    const unsubscribe = store.subscribe(() => {
-      setState(store.getState());
-    });
-    return unsubscribe;
-  }, []);
+  const [state, dispatch] = useReducer(simonReducer, initialState);
 
   const {
     gameStatus,
@@ -235,11 +201,11 @@ const SimonGame = () => {
   useEffect(() => {
     if (gameStatus === GAME_STATUS.SUCCESS) {
       const timer = setTimeout(() => {
-        store.dispatch(nextLevel());
-      }, 1000);
+        dispatch(nextLevel());
+      }, 1100);
       return () => clearTimeout(timer);
     }
-  }, [gameStatus]);
+  }, [gameStatus, dispatch]);
 
   const showSequence = async () => {
     await sleep(500); // Initial delay
@@ -248,38 +214,38 @@ const SimonGame = () => {
       const colorIndex = sequence[i];
 
       // Light up button
-      store.dispatch(setActiveButton(colorIndex));
+      dispatch(setActiveButton(colorIndex));
       playSound(colorIndex);
 
       await sleep(600); // Button stays lit
 
       // Turn off button
-      store.dispatch(setActiveButton(null));
+      dispatch(setActiveButton(null));
 
       await sleep(200); // Gap between buttons
     }
 
     // After showing sequence, wait for player
-    store.dispatch(setStatus(GAME_STATUS.WAITING));
+    dispatch(setStatus(GAME_STATUS.WAITING));
   };
 
   const handleButtonClick = (colorIndex) => {
     if (gameStatus !== GAME_STATUS.WAITING) return;
 
     // Visual and audio feedback
-    store.dispatch(setActiveButton(colorIndex));
+    dispatch(setActiveButton(colorIndex));
     playSound(colorIndex);
 
     setTimeout(() => {
-      store.dispatch(setActiveButton(null));
+      dispatch(setActiveButton(null));
     }, 300);
 
     // Record player input
-    store.dispatch(playerInput(colorIndex));
+    dispatch(playerInput(colorIndex));
 
     // Check the input
     setTimeout(() => {
-      store.dispatch(checkInput());
+      dispatch(checkInput());
     }, 100);
   };
 
@@ -314,7 +280,7 @@ const SimonGame = () => {
         <p>Strict Mode: {strictMode ? "ON" : "OFF"}</p>
       </div>
 
-      <div>
+      <div className="color_buttons_container">
         {COLORS.map((color, index) => (
           <button
             key={color}
@@ -322,10 +288,7 @@ const SimonGame = () => {
             disabled={gameStatus !== GAME_STATUS.WAITING}
             style={{
               backgroundColor: color,
-              opacity: activeButton === index ? 1 : 0.6,
-              width: "100px",
-              height: "100px",
-              margin: "5px",
+              opacity: activeButton === index ? 1 : 0.6,  
             }}
           >
             {color}
@@ -335,7 +298,7 @@ const SimonGame = () => {
 
       <div>
         <button
-          onClick={() => store.dispatch(startGame())}
+          onClick={() => dispatch(startGame())}
           disabled={
             gameStatus !== GAME_STATUS.IDLE &&
             gameStatus !== GAME_STATUS.GAME_OVER
@@ -344,13 +307,13 @@ const SimonGame = () => {
           Start Game
         </button>
 
-        <button onClick={() => store.dispatch(resetGame())}>Reset</button>
+        <button onClick={() => dispatch(resetGame())}>Reset</button>
 
-        <button onClick={() => store.dispatch(toggleStrictMode())}>
+        <button onClick={() => dispatch(toggleStrictMode())}>
           Toggle Strict Mode
         </button>
 
-          <button onClick={() => store.dispatch(replaySequence())} disabled={gameStatus !== GAME_STATUS.WAITING && gameStatus !== GAME_STATUS.SHOWING}>
+          <button onClick={() => dispatch(replaySequence())} disabled={gameStatus !== GAME_STATUS.WAITING && gameStatus !== GAME_STATUS.SHOWING}>
             Replay Sequence
           </button>
       </div>
