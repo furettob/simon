@@ -1,14 +1,13 @@
 import { useSelector, useDispatch } from "react-redux";
 import "./App.css";
-import { playSound } from "./utils/sound";
-import { checkInput, COLORS, GAME_STATUS, addStepToSequence, playerInput, replaySequence, resetGame, setActiveButton, setStatus, playNewLevelThunk, toggleStrictMode, handleClickColorButtonThunk } from "./utils/simonReducer";
+import { checkInput, COLORS, GAME_STATUS, addStepToSequence, playerInput, replaySequence, resetGame, setActiveButton, setStatus, playNewLevelThunk, toggleStrictMode, handleClickColorButtonThunk, type SimonState } from "./utils/simonReducer";
 
 // ==================== REACT COMPONENT ====================
 const SimonGame = () => {
   const dispatch = useDispatch();
   
   // Use selectors to get state
-  const { gameStatus, sequence, playerSequence, score, strictMode, activeButton, highScore } = useSelector((state) => state);
+  const { gameStatus, sequence, playerSequence, score, strictMode, activeButton } = useSelector((state: SimonState) => state);
 
   const handleButtonClick = (colorIndex: number) => {
     if (gameStatus !== GAME_STATUS.WAITING) return;
@@ -39,7 +38,6 @@ const SimonGame = () => {
       <div>
         <p>Level: {sequence.length}</p>
         <p>Score: {score}</p>
-        <p>High Score: {highScore}</p>
         <p>
           Status: {getStatusMessage()} - {gameStatus}
         </p>

@@ -135,6 +135,15 @@ export const toggleStrictMode = () => ({ type: TOGGLE_STRICT_MODE });
 export const replaySequence = () => ({ type: REPLAY_SEQUENCE });
 
 // ==================== INITIAL STATE ====================
+export type SimonState = {
+  gameStatus: string;
+  sequence: number[];
+  playerSequence: number[];
+  score: number;
+  strictMode: boolean;
+  activeButton: number | null;
+};
+
 export const initialState = {
   gameStatus: GAME_STATUS.IDLE,
   sequence: [],
@@ -142,7 +151,6 @@ export const initialState = {
   score: 0,
   strictMode: false,
   activeButton: null,
-  highScore: 0,
 };
 
 // ==================== REDUCER ====================
@@ -213,13 +221,11 @@ export const simonReducer = (state, action) => {
       return {
         ...state,
         gameStatus: GAME_STATUS.GAME_OVER,
-        highScore: Math.max(state.highScore, state.score),
       };
 
     case RESET_GAME:
       return {
         ...initialState,
-        highScore: state.highScore,
       };
 
     case TOGGLE_STRICT_MODE:
