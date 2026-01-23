@@ -1,50 +1,18 @@
-import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import "./App.css";
 import { playSound } from "./utils/sound";
-import { checkInput, COLORS, GAME_STATUS, addStepToSequence, playerInput, replaySequence, resetGame, setActiveButton, setStatus, startGame, toggleStrictMode } from "./utils/simonReducer";
+import { checkInput, COLORS, GAME_STATUS, addStepToSequence, playerInput, replaySequence, resetGame, setActiveButton, setStatus, playNewLevelThunk, toggleStrictMode, handleClickColorButtonThunk } from "./utils/simonReducer";
 
 // ==================== REACT COMPONENT ====================
 const SimonGame = () => {
   const dispatch = useDispatch();
   
   // Use selectors to get state
-  const gameStatus = useSelector((state) => state.gameStatus);
-  const sequence = useSelector((state) => state.sequence);
-  const playerSequence = useSelector((state) => state.playerSequence);
-  const score = useSelector((state) => state.score);
-  const strictMode = useSelector((state) => state.strictMode);
-  const activeButton = useSelector((state) => state.activeButton);
-  const highScore = useSelector((state) => state.highScore);
-
-  // Handle SUCCESS status
-  // useEffect(() => {
-  //   if (gameStatus === GAME_STATUS.SUCCESS) {
-  //     const timer = setTimeout(() => {
-  //       dispatch(addStepToSequence());
-  //     }, 1100);
-  //     return () => clearTimeout(timer);
-  //   }
-  // }, [gameStatus, dispatch]);
+  const { gameStatus, sequence, playerSequence, score, strictMode, activeButton, highScore } = useSelector((state) => state);
 
   const handleButtonClick = (colorIndex: number) => {
     if (gameStatus !== GAME_STATUS.WAITING) return;
-
-    // Visual and audio feedback
-    dispatch(setActiveButton(colorIndex));
-    playSound(colorIndex);
-
-    setTimeout(() => {
-      dispatch(setActiveButton(null));
-    }, 300);
-
-    // Record player input
-    dispatch(playerInput(colorIndex));
-
-    // Check the input
-    setTimeout(() => {
-      dispatch(checkInput());
-    }, 100);
+    dispatch(handleClickColorButtonThunk(colorIndex));
   };
 
   const getStatusMessage = () => {
@@ -96,7 +64,7 @@ const SimonGame = () => {
 
       <div>
         <button
-          onClick={() => dispatch(startGame())}
+          onClick={() => dispatch(playNewLevelThunk())}
           disabled={
             gameStatus !== GAME_STATUS.IDLE &&
             gameStatus !== GAME_STATUS.GAME_OVER
