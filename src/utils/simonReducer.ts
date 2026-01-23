@@ -21,7 +21,7 @@ const ADD_STEP_TO_SEQUENCE = "ADD_STEP_TO_SEQUENCE";
 const GAME_OVER = "GAME_OVER";
 const RESET_GAME = "RESET_GAME";
 const SET_ACTIVE_BUTTON = "SET_ACTIVE_BUTTON";
-const TOGGLE_STRICT_MODE = "TOGGLE_STRICT_MODE";
+const TOGGLE_SKILL_LEVEL = "TOGGLE_SKILL_LEVEL";
 const REPLAY_SEQUENCE = "REPLAY_SEQUENCE";
 
 // ==================== HELPERS ====================
@@ -74,7 +74,7 @@ export const waitThunk =
 
 export const playNewLevelThunk = () => async (dispatch, getState) => {
   // Set up the game with first/new color
-  dispatch({ type: ADD_STEP_TO_SEQUENCE });
+  dispatch(addStepToSequence());
 
   // Get the updated state with the new sequence
   const { sequence } = getState();
@@ -99,12 +99,13 @@ export const handleClickColorButtonThunk =
 
     // Check if current input is wrong
     if (playerSequence[currentIndex] !== sequence[currentIndex]) {
-      if (strictMode) {
+      // TODO: introduce strictMode AKA gameMode if (strictMode) {
         dispatch({ type: GAME_OVER });
-      } else {
-        // Non-strict mode: replay the sequence
-        dispatch({ type: SET_STATUS, payload: GAME_STATUS.GAME_OVER });
-      }
+        return;
+      // } else {
+      //   // Non-strict mode: replay the sequence
+      //   dispatch({ type: SET_STATUS, payload: GAME_STATUS.GAME_OVER });
+      // }
     }
 
     // Correct input - check if sequence is complete
@@ -131,7 +132,7 @@ export const setActiveButton = (colorIndex) => ({
   type: SET_ACTIVE_BUTTON,
   payload: colorIndex,
 });
-export const toggleStrictMode = () => ({ type: TOGGLE_STRICT_MODE });
+export const toggleSkillLevel = () => ({ type: TOGGLE_SKILL_LEVEL });
 export const replaySequence = () => ({ type: REPLAY_SEQUENCE });
 
 // ==================== INITIAL STATE ====================
@@ -140,7 +141,7 @@ export type SimonState = {
   sequence: number[];
   playerSequence: number[];
   score: number;
-  strictMode: boolean;
+  skillLevel: 1 | 2 | 3 | 4;
   activeButton: number | null;
 };
 
@@ -149,7 +150,7 @@ export const initialState = {
   sequence: [],
   playerSequence: [],
   score: 0,
-  strictMode: false,
+  skillLevel: 1,
   activeButton: null,
 };
 
@@ -219,7 +220,7 @@ export const simonReducer = (state, action) => {
 
     case GAME_OVER:
       return {
-        ...state,
+        ...initialState,
         gameStatus: GAME_STATUS.GAME_OVER,
       };
 
@@ -228,10 +229,11 @@ export const simonReducer = (state, action) => {
         ...initialState,
       };
 
-    case TOGGLE_STRICT_MODE:
+    case TOGGLE_SKILL_LEVEL:
       return {
         ...state,
-        strictMode: !state.strictMode,
+        // TODO: create util to derive new skillLevel
+        skillLevel: state.skillLevel === 4 ? 1 : (state.skillLevel + 1) as 1 | 2 | 3 | 4,
       };
 
     default:

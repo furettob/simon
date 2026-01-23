@@ -1,13 +1,34 @@
 import { useSelector, useDispatch } from "react-redux";
 import "./App.css";
-import { checkInput, COLORS, GAME_STATUS, addStepToSequence, playerInput, replaySequence, resetGame, setActiveButton, setStatus, playNewLevelThunk, toggleStrictMode, handleClickColorButtonThunk, type SimonState } from "./utils/simonReducer";
+import {
+  checkInput,
+  COLORS,
+  GAME_STATUS,
+  addStepToSequence,
+  playerInput,
+  replaySequence,
+  resetGame,
+  setActiveButton,
+  setStatus,
+  playNewLevelThunk,
+  toggleSkillLevel,
+  handleClickColorButtonThunk,
+  type SimonState,
+} from "./utils/simonReducer";
 
 // ==================== REACT COMPONENT ====================
 const SimonGame = () => {
   const dispatch = useDispatch();
-  
+
   // Use selectors to get state
-  const { gameStatus, sequence, playerSequence, score, strictMode, activeButton } = useSelector((state: SimonState) => state);
+  const {
+    gameStatus,
+    sequence,
+    playerSequence,
+    score,
+    activeButton,
+    skillLevel,
+  } = useSelector((state: SimonState) => state);
 
   const handleButtonClick = (colorIndex: number) => {
     if (gameStatus !== GAME_STATUS.WAITING) return;
@@ -41,7 +62,7 @@ const SimonGame = () => {
         <p>
           Status: {getStatusMessage()} - {gameStatus}
         </p>
-        <p>Strict Mode: {strictMode ? "ON" : "OFF"}</p>
+        <p>Skill Level: {skillLevel}</p>
       </div>
 
       <div className="color_buttons_container">
@@ -52,7 +73,7 @@ const SimonGame = () => {
             disabled={gameStatus !== GAME_STATUS.WAITING}
             style={{
               backgroundColor: color,
-              opacity: activeButton === index ? 1 : 0.6,  
+              opacity: activeButton === index ? 1 : 0.6,
             }}
           >
             {color}
@@ -73,19 +94,31 @@ const SimonGame = () => {
 
         <button onClick={() => dispatch(resetGame())}>Reset</button>
 
-        <button onClick={() => dispatch(toggleStrictMode())}>
-          Toggle Strict Mode
-        </button>
-
-        <button onClick={() => dispatch(replaySequence())} disabled={gameStatus !== GAME_STATUS.WAITING && gameStatus !== GAME_STATUS.SHOWING}>
-            Replay Sequence
+        <div>
+          <label>Skill Level (1,2,3,4)</label>
+          <button onClick={() => dispatch(toggleSkillLevel())}>
+            {skillLevel}
           </button>
+        </div>
+
+        <button
+          onClick={() => dispatch(replaySequence())}
+          disabled={
+            gameStatus !== GAME_STATUS.WAITING &&
+            gameStatus !== GAME_STATUS.SHOWING
+          }
+        >
+          Replay Sequence
+        </button>
       </div>
 
       <div>
         <h3>Debug Info:</h3>
         <p>Sequence: {sequence.map((i: number) => COLORS[i]).join(", ")}</p>
-        <p>Player Input: {playerSequence.map((i: number) => COLORS[i]).join(", ")}</p>
+        <p>
+          Player Input:{" "}
+          {playerSequence.map((i: number) => COLORS[i]).join(", ")}
+        </p>
       </div>
     </div>
   );
