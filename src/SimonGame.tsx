@@ -1,26 +1,23 @@
-import { useReducer, useEffect } from "react";
-
+import { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import "./App.css";
 import { playSound } from "./utils/sound";
-import { checkInput, COLORS, GAME_STATUS, initialState, nextLevel, playerInput, replaySequence, resetGame, setActiveButton, setStatus, simonReducer, startGame, toggleStrictMode } from "./utils/simonReducer";
+import { checkInput, COLORS, GAME_STATUS, nextLevel, playerInput, replaySequence, resetGame, setActiveButton, setStatus, startGame, toggleStrictMode } from "./utils/simonReducer";
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 // ==================== REACT COMPONENT ====================
 const SimonGame = () => {
-  const [state, dispatch] = useReducer(simonReducer, initialState);
-
-  const {
-    gameStatus,
-    sequence,
-    playerSequence,
-    score,
-    strictMode,
-    activeButton,
-    highScore,
-  } = state;
-
-  // Show sequence when status changes to SHOWING
+  const dispatch = useDispatch();
+  
+  // Use selectors to get state
+  const gameStatus = useSelector((state) => state.gameStatus);
+  const sequence = useSelector((state) => state.sequence);
+  const playerSequence = useSelector((state) => state.playerSequence);
+  const score = useSelector((state) => state.score);
+  const strictMode = useSelector((state) => state.strictMode);
+  const activeButton = useSelector((state) => state.activeButton);
+  const highScore = useSelector((state) => state.highScore);
   useEffect(() => {
     if (gameStatus === GAME_STATUS.SHOWING) {
       showSequence();
@@ -143,7 +140,7 @@ const SimonGame = () => {
           Toggle Strict Mode
         </button>
 
-          <button onClick={() => dispatch(replaySequence())} disabled={gameStatus !== GAME_STATUS.WAITING && gameStatus !== GAME_STATUS.SHOWING}>
+        <button onClick={() => dispatch(replaySequence())} disabled={gameStatus !== GAME_STATUS.WAITING && gameStatus !== GAME_STATUS.SHOWING}>
             Replay Sequence
           </button>
       </div>

@@ -54,6 +54,7 @@ export const initialState = {
 
 // ==================== REDUCER ====================
 export const simonReducer = (state, action) => {
+  console.log("Reducer action:", action, state);
   switch (action.type) {
     case START_GAME:
       const firstColor = Math.floor(Math.random() * 4);
