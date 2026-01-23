@@ -51,20 +51,23 @@ const playSequence = async (sequence: number[], dispatch) => {
   }
 };
 export const waitThunk =
-  ({ currentPlayerSequenceLength }: { currentPlayerSequenceLength: number }) =>
+  ({ propPlayerSequenceLength }: { propPlayerSequenceLength: number }) =>
   async (dispatch, getState) => {
     dispatch(setStatus(GAME_STATUS.WAITING));
-    const { sequence: currentSequence, playerSequence } = getState();
+    const { sequence: oldGameSequence } = getState();
     setTimeout(() => {
+    const { playerSequence, sequence: newGameSequence } = getState();
       console.log("TIMEOUT!!!");
       // TODO: better condition to detect inactivity
       if (
-        playerSequence.length <= currentPlayerSequenceLength &&
-        getState().sequence.length <= currentSequence.length
+        // Player did not submit an input in the last 5s
+        playerSequence.length <= propPlayerSequenceLength &&
+        // Player did not advance level
+        newGameSequence.length === oldGameSequence.length
       ) {
         console.log("GAME OVER TRIGGERED BY TIMEOUT: ", {
-          currentSequenceLength: currentSequence.length,
-          currentPlayerSequenceLength,
+          currentSequenceLength: oldGameSequence.length,
+          currentPlayerSequenceLength: propPlayerSequenceLength,
           playerSequenceLength: playerSequence.length,
         });
         dispatch({ type: GAME_OVER });
@@ -82,7 +85,7 @@ export const playNewLevelThunk = () => async (dispatch, getState) => {
   await playSequence(sequence, dispatch);
 
   // After showing sequence, set status to waiting
-  dispatch(waitThunk({ currentPlayerSequenceLength: 0 }));
+  dispatch(waitThunk({ propPlayerSequenceLength: 0 }));
 };
 export const handleClickColorButtonThunk =
   (colorIndex: number) => async (dispatch, getState) => {
@@ -94,7 +97,7 @@ export const handleClickColorButtonThunk =
     // Check the input
     await sleep(100);
 
-    const { sequence, playerSequence, strictMode } = getState();
+    const { sequence, playerSequence } = getState();
     const currentIndex = playerSequence.length - 1;
 
     // Check if current input is wrong
@@ -116,10 +119,10 @@ export const handleClickColorButtonThunk =
     }
 
     // Correct but sequence not complete
-    dispatch(waitThunk({ currentPlayerSequenceLength: playerSequence.length }));
+    dispatch(waitThunk({ propPlayerSequenceLength: playerSequence.length }));
   };
 // ==================== ACTION CREATORS ====================
-export const setStatus = (status) => ({ type: SET_STATUS, payload: status });
+export const setStatus = (status: SimonState["gameStatus"]) => ({ type: SET_STATUS, payload: status });
 export const playerInput = (colorIndex) => ({
   type: READ_PLAYER_INPUT,
   payload: colorIndex,
