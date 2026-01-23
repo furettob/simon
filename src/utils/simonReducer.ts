@@ -1,3 +1,5 @@
+import { playSound } from "./sound";
+
 // ==================== CONSTANTS ====================
 export const GAME_STATUS = {
   IDLE: "IDLE",
@@ -12,26 +14,60 @@ export const COLORS = ["red", "green", "blue", "yellow"];
 
 // ==================== ACTION TYPES ====================
 const START_GAME = "START_GAME";
-const SHOW_SEQUENCE = "SHOW_SEQUENCE";
 const SET_STATUS = "SET_STATUS";
 const READ_PLAYER_INPUT = "READ_PLAYER_INPUT";
 const CHECK_INPUT = "CHECK_INPUT";
-const NEXT_LEVEL = "NEXT_LEVEL";
+const ADD_STEP_TO_SEQUENCE = "ADD_STEP_TO_SEQUENCE";
 const GAME_OVER = "GAME_OVER";
 const RESET_GAME = "RESET_GAME";
 const SET_ACTIVE_BUTTON = "SET_ACTIVE_BUTTON";
 const TOGGLE_STRICT_MODE = "TOGGLE_STRICT_MODE";
 const REPLAY_SEQUENCE = "REPLAY_SEQUENCE";
 
+// ==================== HELPERS ====================
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const playSequence = async (sequence: number[], dispatch) => {
+    // Show the sequence
+  await sleep(500); // Initial delay
+
+  for (let i = 0; i < sequence.length; i++) {
+    const colorIndex = sequence[i];
+
+    // Light up button
+    dispatch(setActiveButton(colorIndex));
+    playSound(colorIndex);
+
+    await sleep(600); // Button stays lit
+
+    // Turn off button
+    dispatch(setActiveButton(null));
+
+    await sleep(200); // Gap between buttons
+  }
+}
+
 // ==================== ACTION CREATORS ====================
-export const startGame = () => ({ type: START_GAME });
+export const startGame = () => async (dispatch, getState) => {
+  // Initialize the game with first color
+  dispatch({ type: ADD_STEP_TO_SEQUENCE });
+  
+  // Get the updated state with the new sequence
+  const { sequence } = getState();
+  
+  await playSequence(sequence, dispatch)
+
+  // After showing sequence, set status to waiting
+  dispatch(setStatus(GAME_STATUS.WAITING));
+};
+
 export const setStatus = (status) => ({ type: SET_STATUS, payload: status });
 export const playerInput = (colorIndex) => ({
   type: READ_PLAYER_INPUT,
   payload: colorIndex,
 });
 export const checkInput = () => ({ type: CHECK_INPUT });
-export const nextLevel = () => ({ type: NEXT_LEVEL });
+export const addStepToSequence = () => ({ type: ADD_STEP_TO_SEQUENCE });
 export const gameOver = () => ({ type: GAME_OVER });
 export const resetGame = () => ({ type: RESET_GAME });
 export const setActiveButton = (colorIndex) => ({
@@ -129,7 +165,7 @@ export const simonReducer = (state, action) => {
         gameStatus: GAME_STATUS.WAITING,
       };
 
-    case NEXT_LEVEL:
+    case ADD_STEP_TO_SEQUENCE:
       const nextColor = Math.floor(Math.random() * 4);
       const nextSequence = [...state.sequence, nextColor];
 

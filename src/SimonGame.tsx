@@ -2,9 +2,7 @@ import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import "./App.css";
 import { playSound } from "./utils/sound";
-import { checkInput, COLORS, GAME_STATUS, nextLevel, playerInput, replaySequence, resetGame, setActiveButton, setStatus, startGame, toggleStrictMode } from "./utils/simonReducer";
-
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+import { checkInput, COLORS, GAME_STATUS, addStepToSequence, playerInput, replaySequence, resetGame, setActiveButton, setStatus, startGame, toggleStrictMode } from "./utils/simonReducer";
 
 // ==================== REACT COMPONENT ====================
 const SimonGame = () => {
@@ -18,43 +16,16 @@ const SimonGame = () => {
   const strictMode = useSelector((state) => state.strictMode);
   const activeButton = useSelector((state) => state.activeButton);
   const highScore = useSelector((state) => state.highScore);
-  useEffect(() => {
-    if (gameStatus === GAME_STATUS.SHOWING) {
-      showSequence();
-    }
-  }, [gameStatus, sequence.length]);
 
   // Handle SUCCESS status
-  useEffect(() => {
-    if (gameStatus === GAME_STATUS.SUCCESS) {
-      const timer = setTimeout(() => {
-        dispatch(nextLevel());
-      }, 1100);
-      return () => clearTimeout(timer);
-    }
-  }, [gameStatus, dispatch]);
-
-  const showSequence = async () => {
-    await sleep(500); // Initial delay
-
-    for (let i = 0; i < sequence.length; i++) {
-      const colorIndex = sequence[i];
-
-      // Light up button
-      dispatch(setActiveButton(colorIndex));
-      playSound(colorIndex);
-
-      await sleep(600); // Button stays lit
-
-      // Turn off button
-      dispatch(setActiveButton(null));
-
-      await sleep(200); // Gap between buttons
-    }
-
-    // After showing sequence, wait for player
-    dispatch(setStatus(GAME_STATUS.WAITING));
-  };
+  // useEffect(() => {
+  //   if (gameStatus === GAME_STATUS.SUCCESS) {
+  //     const timer = setTimeout(() => {
+  //       dispatch(addStepToSequence());
+  //     }, 1100);
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [gameStatus, dispatch]);
 
   const handleButtonClick = (colorIndex: number) => {
     if (gameStatus !== GAME_STATUS.WAITING) return;
