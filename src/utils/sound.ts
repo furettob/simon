@@ -10,7 +10,7 @@ export const playSound = ({
   colorIndex: number;
   skillLevel: number;
 }) => {
-  const frequencies = [100,100,100,100] // [329.63, 261.63, 220, 164.81]; // E4, C4, A3, E3
+  const frequencies = [329.63, 261.63, 220, 164.81]; // E4, C4, A3, E3
 
   if (currentOscillator) {
     currentOscillator.stop();
