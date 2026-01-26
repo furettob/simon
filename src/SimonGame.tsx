@@ -3,7 +3,6 @@ import "./App.css";
 import {
   COLORS,
   GAME_STATUS,
-  replaySequence,
   resetGame,
   playNewLevelThunk,
   toggleSkillLevel,
@@ -96,16 +95,6 @@ const SimonGame = () => {
             {skillLevel}
           </button>
         </div>
-
-        <button
-          onClick={() => dispatch(replaySequence())}
-          disabled={
-            gameStatus !== GAME_STATUS.WAITING &&
-            gameStatus !== GAME_STATUS.SHOWING
-          }
-        >
-          Replay Sequence
-        </button>
       </div>
 
       <div className="debug_container">

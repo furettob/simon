@@ -29,7 +29,7 @@ export const playSound = ({
     try {
       currentOscillator.stop();
       currentOscillator.disconnect();
-    } catch (e) {
+    } catch (_e) {
       // Oscillator may already be stopped, ignore error
     }
   }

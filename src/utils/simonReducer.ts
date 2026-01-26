@@ -1,4 +1,8 @@
 import { intervalMap, playSound } from "./sound";
+import type { UnknownAction, ThunkDispatch } from '@reduxjs/toolkit';
+
+// ==================== TYPES ====================
+type AppDispatch = ThunkDispatch<SimonState, undefined, UnknownAction>;
 
 // ==================== CONSTANTS ====================
 export const GAME_STATUS = {
@@ -21,7 +25,6 @@ const GAME_OVER = "GAME_OVER";
 const RESET_GAME = "RESET_GAME";
 const SET_ACTIVE_BUTTON = "SET_ACTIVE_BUTTON";
 const TOGGLE_SKILL_LEVEL = "TOGGLE_SKILL_LEVEL";
-const REPLAY_SEQUENCE = "REPLAY_SEQUENCE";
 const SET_TIMEOUT_REF = "SET_TIMEOUT_REF";
 
 // ==================== HELPERS ====================
@@ -30,7 +33,7 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 // TODO: make this a thunk
 const lightUpButton = async (
   { colorIndex, skillLevel }: { colorIndex: number; skillLevel: number },
-  dispatch,
+  dispatch: AppDispatch,
 ) => {
   // Light up button
   dispatch(setActiveButton(colorIndex));
@@ -47,7 +50,7 @@ const lightUpButton = async (
 // TODO: make this a thunk
 const playSequence = async (
   { sequence, skillLevel }: { sequence: number[]; skillLevel: number },
-  dispatch,
+  dispatch: AppDispatch,
 ) => {
   // Show the sequence
   await sleep(500); // Initial delay
@@ -66,7 +69,7 @@ const playSequence = async (
     await lightUpButton({ colorIndex: sequence[i], skillLevel }, dispatch);
   }
 };
-export const waitThunk = () => async (dispatch, getState) => {
+export const waitThunk = () => async (dispatch: AppDispatch, getState: () => SimonState) => {
   dispatch(setStatus(GAME_STATUS.WAITING));
   const { sequence, playerSequence, timeoutRef } = getState();
 
@@ -98,12 +101,11 @@ export const waitThunk = () => async (dispatch, getState) => {
   dispatch({ type: SET_TIMEOUT_REF, payload: gameOverTimeout });
 };
 
-export const playNewLevelThunk = () => async (dispatch, getState) => {
+export const playNewLevelThunk = () => async (dispatch: AppDispatch, getState: () => SimonState) => {
   console.log("Starting new level...");
   const { gameStatus } = getState();
   if (
-    gameStatus === GAME_STATUS.SHOWING ||
-    gameStatus === GAME_STATUS.GAME_OVER
+    gameStatus === GAME_STATUS.SHOWING
   ) {
     return;
   }
@@ -124,7 +126,7 @@ export const playNewLevelThunk = () => async (dispatch, getState) => {
 };
 
 export const handleClickColorButtonThunk =
-  (colorIndex: number) => async (dispatch, getState) => {
+  (colorIndex: number) => async (dispatch: AppDispatch, getState: () => SimonState) => {
     // Record player input
     dispatch(addPlayerInputToSequence(colorIndex));
 
@@ -168,12 +170,11 @@ export const checkInput = () => ({ type: CHECK_INPUT });
 export const addStepToSequence = () => ({ type: ADD_STEP_TO_SEQUENCE });
 export const gameOver = () => ({ type: GAME_OVER });
 export const resetGame = () => ({ type: RESET_GAME });
-export const setActiveButton = (colorIndex) => ({
+export const setActiveButton = (colorIndex: number | null) => ({
   type: SET_ACTIVE_BUTTON,
   payload: colorIndex,
 });
 export const toggleSkillLevel = () => ({ type: TOGGLE_SKILL_LEVEL });
-export const replaySequence = () => ({ type: REPLAY_SEQUENCE });
 
 // ==================== INITIAL STATE ====================
 export type SimonState = {
@@ -183,8 +184,21 @@ export type SimonState = {
   score: number;
   skillLevel: 1 | 2 | 3 | 4;
   activeButton: number | null;
-  timeoutRef?: number | null;
+  timeoutRef?: number | undefined;
 };
+
+// ==================== ACTION TYPES ====================
+type SimonAction =
+  | { type: typeof START_GAME }
+  | { type: typeof SET_STATUS; payload: string }
+  | { type: typeof ADD_PLATER_INPUT_TO_SEQUENCE; payload: number }
+  | { type: typeof CHECK_INPUT }
+  | { type: typeof ADD_STEP_TO_SEQUENCE }
+  | { type: typeof GAME_OVER }
+  | { type: typeof RESET_GAME }
+  | { type: typeof SET_ACTIVE_BUTTON; payload: number | null }
+  | { type: typeof TOGGLE_SKILL_LEVEL }
+  | { type: typeof SET_TIMEOUT_REF; payload: number };
 
 export const initialState = {
   gameStatus: GAME_STATUS.IDLE,
@@ -196,9 +210,9 @@ export const initialState = {
 };
 
 // ==================== REDUCER ====================
-export const simonReducer = (state, action) => {
+export const simonReducer = (state: SimonState, action: SimonAction) => {
   switch (action.type) {
-    case START_GAME:
+    case START_GAME: {
       const firstColor = Math.floor(Math.random() * 4);
       return {
         ...state,
@@ -207,7 +221,7 @@ export const simonReducer = (state, action) => {
         playerSequence: [],
         score: 0,
       };
-
+    }
     case SET_STATUS:
       return {
         ...state,
@@ -220,7 +234,7 @@ export const simonReducer = (state, action) => {
         activeButton: action.payload,
       };
 
-    case ADD_PLATER_INPUT_TO_SEQUENCE:
+    case ADD_PLATER_INPUT_TO_SEQUENCE: {
       if (state.gameStatus !== GAME_STATUS.WAITING) {
         console.warn("Ignoring player input, not in WAITING state");
         return state;
@@ -232,8 +246,9 @@ export const simonReducer = (state, action) => {
         ...state,
         playerSequence: newPlayerSequence,
       };
+    }
 
-    case ADD_STEP_TO_SEQUENCE:
+    case ADD_STEP_TO_SEQUENCE: {
       const nextColor = Math.floor(Math.random() * 4);
       const nextSequence = [...state.sequence, nextColor];
 
@@ -243,13 +258,7 @@ export const simonReducer = (state, action) => {
         sequence: nextSequence,
         playerSequence: [],
       };
-
-    case REPLAY_SEQUENCE:
-      return {
-        ...state,
-        gameStatus: GAME_STATUS.SHOWING,
-        playerSequence: [],
-      };
+    } 
 
     case GAME_OVER:
       return {
