@@ -74,3 +74,48 @@ button:focus-visible {
   grid-template-rows: repeat(2, 100px);
   
 }
+
+.debug_container {
+  text-align: left;
+}
+
+.debugLabel {
+  min-width: 24px;
+}
+
+.colorIndicatorWrapper {
+  position: relative;
+}
+
+.colorIndicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  margin-right: 4px;
+}
+
+.colorIndicatorHighlighted {
+ height: 8px;
+ position: absolute;
+ bottom: 0;
+ background-color: #eee;
+ opacity: 0.7;
+ width: 100%;
+}
+
+/* COLORS */
+.bgColor--red {
+  background-color: #ff4c4c;
+}
+.bgColor--green {
+  background-color: #13ff7c;
+}
+.bgColor--blue {
+  background-color: #1c8cff;
+}
+.bgColor--yellow {
+  background-color: #fed93f;
+}

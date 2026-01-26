@@ -1,20 +1,17 @@
 import { useSelector, useDispatch } from "react-redux";
 import "./App.css";
 import {
-  checkInput,
   COLORS,
   GAME_STATUS,
-  addStepToSequence,
-  playerInput,
   replaySequence,
   resetGame,
-  setActiveButton,
-  setStatus,
   playNewLevelThunk,
   toggleSkillLevel,
   handleClickColorButtonThunk,
   type SimonState,
 } from "./utils/simonReducer";
+import { ColorIndicator } from "./ColorIndicator";
+import { Stack } from "@mui/system";
 
 // ==================== REACT COMPONENT ====================
 const SimonGame = () => {
@@ -62,7 +59,6 @@ const SimonGame = () => {
         <p>
           Status: {getStatusMessage()} - {gameStatus}
         </p>
-        <p>Skill Level: {skillLevel}</p>
       </div>
 
       <div className="color_buttons_container">
@@ -112,13 +108,27 @@ const SimonGame = () => {
         </button>
       </div>
 
-      <div>
+      <div className="debug_container">
         <h3>Debug Info:</h3>
-        <p>Sequence: {sequence.map((i: number) => COLORS[i]).join(", ")}</p>
-        <p>
-          Player Input:{" "}
-          {playerSequence.map((i: number) => COLORS[i]).join(", ")}
-        </p>
+        <Stack direction="row" spacing={1}>
+          <span className="debugLabel">GS: </span>
+          {sequence.map((colorIndex: number, index: number) => (
+            <ColorIndicator
+              key={`${index}_${colorIndex}`}
+              colorIndex={colorIndex}
+              isHighlighted={index === playerSequence.length}
+            />
+          ))}
+        </Stack>
+        <Stack direction="row" spacing={1}>
+          <span className="debugLabel">PS: </span>
+          {playerSequence.map((colorIndex: number, index: number) => (
+            <ColorIndicator
+              key={`${index}_${colorIndex}`}
+              colorIndex={colorIndex}
+            />
+          ))}
+        </Stack>
       </div>
     </div>
   );
