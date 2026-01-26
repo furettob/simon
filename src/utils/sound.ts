@@ -1,6 +1,18 @@
 export const intervalMap = [1, 0.75, 0.5, 0.3]; // Speed up sound decay based on skill level
 
+// ==================== AUDIO CONTEXT SINGLETON ====================
+// Create a single reusable AudioContext to avoid memory leaks from creating multiple contexts
+let audioContextInstance: AudioContext | null = null;
+
+const getAudioContext = (): AudioContext => {
+  if (!audioContextInstance) {
+    audioContextInstance = new window.AudioContext();
+  }
+  return audioContextInstance;
+};
+
 let currentOscillator = null as OscillatorNode | null;
+let currentGainNode = null as GainNode | null;
 
 // ==================== HELPER FUNCTIONS ====================
 export const playSound = ({
@@ -12,21 +24,24 @@ export const playSound = ({
 }) => {
   const frequencies = [329.63, 261.63, 220, 164.81]; // E4, C4, A3, E3
 
+  // Clean up previous oscillator and gain node to prevent resource leaks
   if (currentOscillator) {
-    currentOscillator.stop();
-    currentOscillator.disconnect();
+    try {
+      currentOscillator.stop();
+      currentOscillator.disconnect();
+    } catch (e) {
+      // Oscillator may already be stopped, ignore error
+    }
+  }
+
+  if (currentGainNode) {
+    currentGainNode.disconnect();
   }
 
   const interval = intervalMap[Math.max(skillLevel - 1, 0)];
-  console.log(
-    "Playing sound for color index:",
-    colorIndex,
-    "with interval:",
-    interval,
-    skillLevel,
-  );
-  // Create a new audio context to handle sound synthesis
-  const audioContext = new window.AudioContext();
+
+  // Reuse the single AudioContext instead of creating a new one each time
+  const audioContext = getAudioContext();
 
   // Create an oscillator to generate the sound wave
   const oscillator = audioContext.createOscillator();
@@ -47,7 +62,7 @@ export const playSound = ({
   // Set initial gain to 0.3 (30% volume) at the start of playback
   gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
 
-  // Fade out the sound exponentially from 0.3 to 0.01 over 0.5 seconds
+  // Fade out the sound exponentially from 0.3 to 0.01 over the specified interval
   // This creates a smooth decay effect instead of an abrupt stop
   gainNode.gain.exponentialRampToValueAtTime(
     0.01, // End volume (nearly silent)
@@ -57,8 +72,11 @@ export const playSound = ({
   // Start playing the sound immediately
   oscillator.start(audioContext.currentTime);
 
-  // Stop the sound after 0.5 seconds
+  // Stop the sound after the interval duration
   oscillator.stop(audioContext.currentTime + interval);
 
+  // Store references for cleanup
   currentOscillator = oscillator;
+  currentGainNode = gainNode;
 };
+
