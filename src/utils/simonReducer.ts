@@ -1,4 +1,4 @@
-import { playSound } from "./sound";
+import { intervalMap, playSound } from "./sound";
 
 // ==================== CONSTANTS ====================
 export const GAME_STATUS = {
@@ -28,12 +28,12 @@ const REPLAY_SEQUENCE = "REPLAY_SEQUENCE";
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 // TODO: make this a thunk
-const lightUpButton = async (colorIndex: number, dispatch) => {
+const lightUpButton = async ({colorIndex, skillLevel}: {colorIndex: number, skillLevel: number}, dispatch ) => {
   // Light up button
-  playSound(colorIndex);
+  playSound({colorIndex, skillLevel}); // TODO: pass actual skillLevel
   dispatch(setActiveButton(colorIndex));
 
-  await sleep(600); // Button stays lit
+  await sleep(intervalMap[skillLevel - 1] * 1000); // Button stays lit
 
   // Turn off button
   dispatch(setActiveButton(null));
@@ -42,12 +42,12 @@ const lightUpButton = async (colorIndex: number, dispatch) => {
 };
 
 // TODO: make this a thunk
-const playSequence = async (sequence: number[], dispatch) => {
+const playSequence = async ({sequence, skillLevel}: {sequence: number[], skillLevel: number}, dispatch) => {
   // Show the sequence
   await sleep(500); // Initial delay
 
   for (let i = 0; i < sequence.length; i++) {
-    await lightUpButton(sequence[i], dispatch);
+    await lightUpButton({colorIndex: sequence[i], skillLevel}, dispatch);
   }
 };
 export const waitThunk =
@@ -80,16 +80,16 @@ export const playNewLevelThunk = () => async (dispatch, getState) => {
   dispatch(addStepToSequence());
 
   // Get the updated state with the new sequence
-  const { sequence } = getState();
+  const { sequence, skillLevel } = getState();
 
-  await playSequence(sequence, dispatch);
+  await playSequence({sequence, skillLevel}, dispatch);
 
   // After showing sequence, set status to waiting
   dispatch(waitThunk({ propPlayerSequenceLength: 0 }));
 };
 export const handleClickColorButtonThunk =
   (colorIndex: number) => async (dispatch, getState) => {
-    await lightUpButton(colorIndex, dispatch);
+    await lightUpButton({colorIndex, skillLevel: getState().skillLevel}, dispatch);
 
     // Record player input
     dispatch(playerInput(colorIndex));
