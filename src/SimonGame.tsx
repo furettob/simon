@@ -41,8 +41,6 @@ const SimonGame = () => {
         return "Your turn!";
       case GAME_STATUS.SUCCESS:
         return "Correct! Next level...";
-      case GAME_STATUS.GAME_OVER:
-        return `Game Over! Final Score: ${score}`;
       default:
         return "";
     }
@@ -80,8 +78,7 @@ const SimonGame = () => {
         <button
           onClick={() => dispatch(playNewLevelThunk())}
           disabled={
-            gameStatus !== GAME_STATUS.IDLE &&
-            gameStatus !== GAME_STATUS.GAME_OVER
+            gameStatus !== GAME_STATUS.IDLE
           }
         >
           Start Game

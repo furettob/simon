@@ -1,16 +1,20 @@
-import { intervalMap, playSound } from "./sound";
-import type { UnknownAction, ThunkDispatch } from '@reduxjs/toolkit';
+import {
+  intervalMap,
+  playColorButtonSound,
+  playGameOverSequence,
+} from "./sound";
+import type { UnknownAction, ThunkDispatch } from "@reduxjs/toolkit";
 
 // ==================== TYPES ====================
 type AppDispatch = ThunkDispatch<SimonState, undefined, UnknownAction>;
 
 // ==================== CONSTANTS ====================
 export const GAME_STATUS = {
+  OFF: "OFF",
   IDLE: "IDLE",
   SHOWING: "SHOWING",
   WAITING: "WAITING",
   SUCCESS: "SUCCESS",
-  GAME_OVER: "GAME_OVER",
 };
 
 export const COLORS = ["red", "green", "blue", "yellow"];
@@ -21,14 +25,14 @@ const SET_STATUS = "SET_STATUS";
 const ADD_PLATER_INPUT_TO_SEQUENCE = "ADD_PLATER_INPUT_TO_SEQUENCE";
 const CHECK_INPUT = "CHECK_INPUT";
 const ADD_STEP_TO_SEQUENCE = "ADD_STEP_TO_SEQUENCE";
-const GAME_OVER = "GAME_OVER";
 const RESET_GAME = "RESET_GAME";
 const SET_ACTIVE_BUTTON = "SET_ACTIVE_BUTTON";
 const TOGGLE_SKILL_LEVEL = "TOGGLE_SKILL_LEVEL";
 const SET_TIMEOUT_REF = "SET_TIMEOUT_REF";
 
 // ==================== HELPERS ====================
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+export const sleep = (ms: number) =>
+  new Promise((resolve) => setTimeout(resolve, ms));
 
 // TODO: make this a thunk
 const lightUpButton = async (
@@ -37,7 +41,7 @@ const lightUpButton = async (
 ) => {
   // Light up button
   dispatch(setActiveButton(colorIndex));
-  playSound({ colorIndex, skillLevel });
+  playColorButtonSound({ colorIndex, skillLevel });
 
   await sleep(intervalMap[skillLevel - 1] * 1000); // Button stays lit
 
@@ -69,75 +73,99 @@ const playSequence = async (
     await lightUpButton({ colorIndex: sequence[i], skillLevel }, dispatch);
   }
 };
-export const waitThunk = () => async (dispatch: AppDispatch, getState: () => SimonState) => {
-  dispatch(setStatus(GAME_STATUS.WAITING));
-  const { sequence, playerSequence, timeoutRef } = getState();
+export const waitThunk =
+  () => async (dispatch: AppDispatch, getState: () => SimonState) => {
+    dispatch(setStatus(GAME_STATUS.WAITING));
+    const { sequence, playerSequence, timeoutRef } = getState();
 
-  clearTimeout(timeoutRef);
+    clearTimeout(timeoutRef);
 
-  const gameOverTimeout = setTimeout(() => {
-    const { playerSequence: newPlayerSequence, sequence: newGameSequence } =
-      getState();
+    const gameOverTimeout = setTimeout(() => {
+      const { playerSequence: newPlayerSequence, sequence: newGameSequence } =
+        getState();
 
-    // TODO: better condition to detect inactivity
-    if (
-      // Player did not submit an input in the last 5s
-      newPlayerSequence.length <= playerSequence.length &&
-      // Player did not advance level
-      newGameSequence.length === sequence.length
-    ) {
-      console.log("GAME OVER TRIGGERED BY TIMEOUT: ", {
-        newSequenceLength: newGameSequence.length,
-        oldSequenceLength: sequence.length,
-        newPlayerSequenceLength: newPlayerSequence.length,
-        oldPlayerSequenceLength: playerSequence.length,
-      });
-      dispatch({ type: GAME_OVER });
-    } else {
-      console.log("Player active, no game over.");
+      // TODO: better condition to detect inactivity
+      if (
+        // Player did not submit an input in the last 5s
+        newPlayerSequence.length <= playerSequence.length &&
+        // Player did not advance level
+        newGameSequence.length === sequence.length
+      ) {
+        console.log("GAME OVER TRIGGERED BY TIMEOUT: ", {
+          newSequenceLength: newGameSequence.length,
+          oldSequenceLength: sequence.length,
+          newPlayerSequenceLength: newPlayerSequence.length,
+          oldPlayerSequenceLength: playerSequence.length,
+        });
+        dispatch(gameOverThunk());
+      } else {
+        console.log("Player active, no game over.");
+      }
+    }, 5000);
+
+    dispatch({ type: SET_TIMEOUT_REF, payload: gameOverTimeout });
+  };
+export const gameOverThunk =
+  () => async (dispatch: AppDispatch, getState: () => SimonState) => {
+    const { activeButton } = getState();
+    console.log("Game Over! ", activeButton);
+    dispatch({ type: SET_STATUS, payload: GAME_STATUS.SHOWING });
+    playGameOverSequence();
+    setActiveButton(null);
+    await sleep(100);
+    setActiveButton(activeButton);
+    await sleep(100);
+    setActiveButton(null);
+    await sleep(100);
+    setActiveButton(activeButton);
+    await sleep(100);
+    setActiveButton(null);
+    dispatch(resetGame());
+    dispatch({ type: SET_STATUS, payload: GAME_STATUS.IDLE });
+  };
+
+export const playNewLevelThunk =
+  () => async (dispatch: AppDispatch, getState: () => SimonState) => {
+    console.log("Starting new level...");
+    const { gameStatus } = getState();
+    if (gameStatus === GAME_STATUS.SHOWING) {
+      return;
     }
-  }, 5000);
+    console.log("Starting new level...");
+    dispatch(setStatus(GAME_STATUS.SHOWING));
+    await sleep(1000); // Pause before new level
 
-  dispatch({ type: SET_TIMEOUT_REF, payload: gameOverTimeout });
-};
+    // Set up the game with first/new color
+    dispatch(addStepToSequence());
 
-export const playNewLevelThunk = () => async (dispatch: AppDispatch, getState: () => SimonState) => {
-  console.log("Starting new level...");
-  const { gameStatus } = getState();
-  if (
-    gameStatus === GAME_STATUS.SHOWING
-  ) {
-    return;
-  }
-  console.log("Starting new level...");
-  dispatch(setStatus(GAME_STATUS.SHOWING));
-  await sleep(1000); // Pause before new level
+    // Get the updated state with the new sequence
+    const { sequence, skillLevel } = getState();
 
-  // Set up the game with first/new color
-  dispatch(addStepToSequence());
+    await playSequence({ sequence, skillLevel }, dispatch);
 
-  // Get the updated state with the new sequence
-  const { sequence, skillLevel } = getState();
-
-  await playSequence({ sequence, skillLevel }, dispatch);
-
-  // After showing sequence, set status to waiting
-  dispatch(waitThunk());
-};
+    // After showing sequence, set status to waiting
+    dispatch(waitThunk());
+  };
 
 export const handleClickColorButtonThunk =
-  (colorIndex: number) => async (dispatch: AppDispatch, getState: () => SimonState) => {
+  (colorIndex: number) =>
+  async (dispatch: AppDispatch, getState: () => SimonState) => {
     // Record player input
+    const { sequence, playerSequence: previousPlayerSequence } = getState();
+    if (previousPlayerSequence.length >= sequence.length) {
+      return;
+    }
     dispatch(addPlayerInputToSequence(colorIndex));
+    const { playerSequence } = getState();
 
     // Check the input
-    const { sequence, playerSequence } = getState();
+
     const currentIndex = playerSequence.length - 1;
 
     // Check if current input is wrong
     if (playerSequence[currentIndex] !== sequence[currentIndex]) {
       // TODO: introduce strictMode AKA gameMode
-      dispatch({ type: GAME_OVER });
+      dispatch(gameOverThunk());
       return;
     }
 
@@ -168,7 +196,6 @@ export const addPlayerInputToSequence = (colorIndex: number) => ({
 });
 export const checkInput = () => ({ type: CHECK_INPUT });
 export const addStepToSequence = () => ({ type: ADD_STEP_TO_SEQUENCE });
-export const gameOver = () => ({ type: GAME_OVER });
 export const resetGame = () => ({ type: RESET_GAME });
 export const setActiveButton = (colorIndex: number | null) => ({
   type: SET_ACTIVE_BUTTON,
@@ -194,7 +221,6 @@ type SimonAction =
   | { type: typeof ADD_PLATER_INPUT_TO_SEQUENCE; payload: number }
   | { type: typeof CHECK_INPUT }
   | { type: typeof ADD_STEP_TO_SEQUENCE }
-  | { type: typeof GAME_OVER }
   | { type: typeof RESET_GAME }
   | { type: typeof SET_ACTIVE_BUTTON; payload: number | null }
   | { type: typeof TOGGLE_SKILL_LEVEL }
@@ -258,18 +284,15 @@ export const simonReducer = (state: SimonState, action: SimonAction) => {
         sequence: nextSequence,
         playerSequence: [],
       };
-    } 
+    }
 
-    case GAME_OVER:
+    case RESET_GAME: {
+      const skillLevel = state.skillLevel;
       return {
         ...initialState,
-        gameStatus: GAME_STATUS.GAME_OVER,
+        skillLevel,
       };
-
-    case RESET_GAME:
-      return {
-        ...initialState,
-      };
+    }
 
     case TOGGLE_SKILL_LEVEL:
       return {
