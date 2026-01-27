@@ -1,13 +1,15 @@
+import { getInterval, intervalType } from "./intervals";
 import {
-  intervalMap,
-  playColorButtonSound,
+  playSound,
   playGameOverSequence,
   playSuccessSequence,
+  type Frequence,
+  frequencies,
 } from "./sound";
 import type { UnknownAction, ThunkDispatch } from "@reduxjs/toolkit";
 
 // ==================== TYPES ====================
-type AppDispatch = ThunkDispatch<SimonState, undefined, UnknownAction>;
+export type AppDispatch = ThunkDispatch<SimonState, undefined, UnknownAction>;
 
 // ==================== CONSTANTS ====================
 export const GAME_STATUS = {
@@ -18,7 +20,7 @@ export const GAME_STATUS = {
   SUCCESS: "SUCCESS",
 };
 
-export const COLORS = ["red", "green", "blue", "yellow"];
+export const COLORS = ["red", "green", "blue", "yellow"] as const;
 
 // ==================== ACTION TYPES ====================
 const START_GAME = "START_GAME";
@@ -35,45 +37,47 @@ const SET_TIMEOUT_REF = "SET_TIMEOUT_REF";
 export const sleep = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
 
-export const lightUpButtonThunk =
+export const ligtAndSoundFeedbackThunk =
   ({
+    frequence,
     colorIndex,
-    skillLevel,
+    durationMs,
   }: {
-    colorIndex: number;
-    skillLevel: number;
+    frequence?: Frequence;
+    colorIndex?: number | null;
+    durationMs: number;
   }) =>
   async (dispatch: AppDispatch) => {
     // Light up button
-    dispatch(setActiveButton(colorIndex));
-    playColorButtonSound({ colorIndex, skillLevel });
-
-    await sleep(intervalMap[skillLevel - 1] * 1000); // Button stays lit
-
-    // Turn off button
+    if (frequence) {
+      playSound({ frequence, durationMs });
+    }
+    if (colorIndex !== undefined) {
+      dispatch(setActiveButton(colorIndex));
+    }
+    await sleep(durationMs); // Button stays lit
     dispatch(setActiveButton(null));
-
-    await sleep(200); // Gap between buttons
   };
 
 export const playSequenceThunk =
-  ({
-    sequence,
-    skillLevel,
-  }: {
-    sequence: number[];
-    skillLevel: number;
-  }) =>
+  ({ sequence, skillLevel }: { sequence: number[]; skillLevel: number }) =>
   async (dispatch: AppDispatch) => {
     // Show the sequence
-    await sleep(500); // Initial delay
+    await sleep(getInterval({ intervalType: intervalType.pauseBeforeNextLevel, skillLevel })); // Initial delay
 
     for (let i = 0; i < sequence.length; i++) {
+      console.log("Playing step ", i, " Color Index: ", sequence[i], "at ", Date.now() % 60_000);
       await dispatch(
-        lightUpButtonThunk({ colorIndex: sequence[i], skillLevel })
+        ligtAndSoundFeedbackThunk({
+          colorIndex: sequence[i],
+          durationMs: getInterval({ intervalType: intervalType.buttonFeedback, skillLevel }),
+          frequence: COLORS[sequence[i]],
+        }),
       );
+      await sleep(getInterval({ intervalType: intervalType.betweenSteps, skillLevel }));
     }
   };
+
 export const waitThunk =
   () => async (dispatch: AppDispatch, getState: () => SimonState) => {
     dispatch(setStatus(GAME_STATUS.WAITING));
@@ -101,13 +105,18 @@ export const gameOverThunk =
   (colorIndex: number | null) => async (dispatch: AppDispatch) => {
     // TODO: what the real game do when timeout? In terms of user feedback?
     dispatch({ type: SET_STATUS, payload: GAME_STATUS.SHOWING });
-    console.log("Game Over! ", colorIndex);
     playGameOverSequence();
     for (let i = 0; i < 3; i++) {
+      dispatch(ligtAndSoundFeedbackThunk({
+        colorIndex,
+        durationMs: getInterval({ intervalType: intervalType.shortFeedback }),
+        frequence: "gameOver",
+      }));
+      await sleep(getInterval({ intervalType: intervalType.shortFeedback }));
       dispatch(setActiveButton(colorIndex));
-      await sleep(200);
+      await sleep(getInterval({ intervalType: intervalType.shortFeedback }));
       dispatch(setActiveButton(null));
-      await sleep(100);
+      await sleep(getInterval({ intervalType: intervalType.shortPause }));
     }
     dispatch(resetGame());
     dispatch({ type: SET_STATUS, payload: GAME_STATUS.IDLE });
@@ -120,13 +129,13 @@ export const successThunk =
     dispatch({ type: SET_STATUS, payload: GAME_STATUS.SHOWING });
     playSuccessSequence();
     setActiveButton(null);
-    await sleep(100);
+    await sleep(getInterval({ intervalType: intervalType.shortPause }));
     setActiveButton(activeButton);
-    await sleep(100);
+    await sleep(getInterval({ intervalType: intervalType.shortFeedback }));
     setActiveButton(null);
-    await sleep(100);
+    await sleep(getInterval({ intervalType: intervalType.shortPause }));
     setActiveButton(activeButton);
-    await sleep(100);
+    await sleep(getInterval({ intervalType: intervalType.shortFeedback }));
     setActiveButton(null);
     dispatch(resetGame());
     dispatch({ type: SET_STATUS, payload: GAME_STATUS.IDLE });
@@ -134,25 +143,22 @@ export const successThunk =
 
 export const playNewLevelThunk =
   () => async (dispatch: AppDispatch, getState: () => SimonState) => {
-    console.log("Starting new level...");
-    const { gameStatus } = getState();
+
+    const { gameStatus, skillLevel } = getState();
     if (gameStatus === GAME_STATUS.SHOWING) {
       return;
     }
-    console.log("Starting new level...");
     dispatch(setStatus(GAME_STATUS.SHOWING));
-    await sleep(1000); // Pause before new level
+    await sleep(getInterval({ intervalType: intervalType.pauseBeforeNextLevel, skillLevel })); // Pause before new level
 
     // Set up the game with first/new color
     dispatch(addStepToSequence());
-
     // Get the updated state with the new sequence
-    const { sequence, skillLevel } = getState();
+    const { sequence } = getState();
 
-    dispatch(playSequenceThunk({ sequence, skillLevel }));
+    await dispatch(playSequenceThunk({ sequence, skillLevel }));
 
-    // After showing sequence, set status to waiting
-    dispatch(waitThunk());
+    dispatch(waitThunk()); // After showing sequence, set status to waiting
   };
 
 export const handleClickColorButtonThunk =
@@ -167,19 +173,22 @@ export const handleClickColorButtonThunk =
     const { playerSequence } = getState();
 
     // Check the input
-
     const currentIndex = playerSequence.length - 1;
-
-    // Check if current input is wrong
     if (playerSequence[currentIndex] !== sequence[currentIndex]) {
       // TODO: introduce strictMode AKA gameMode
       dispatch(gameOverThunk(colorIndex));
       return;
     }
 
-    await dispatch(lightUpButtonThunk(
-      { colorIndex, skillLevel: getState().skillLevel }
-    ));
+    const { skillLevel } = getState();
+
+    await dispatch(
+      ligtAndSoundFeedbackThunk({
+        colorIndex,
+        frequence: COLORS[colorIndex],
+        durationMs: getInterval({ intervalType: intervalType.buttonFeedback, skillLevel }),
+      }),
+    );
 
     // Correct input - check if sequence is complete
     if (playerSequence.length === sequence.length) {

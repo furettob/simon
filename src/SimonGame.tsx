@@ -8,13 +8,14 @@ import {
   toggleSkillLevel,
   handleClickColorButtonThunk,
   type SimonState,
+  type AppDispatch,
 } from "./utils/simonReducer";
 import { ColorIndicator } from "./ColorIndicator";
 import { Stack } from "@mui/system";
 
 // ==================== REACT COMPONENT ====================
 const SimonGame = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   // Use selectors to get state
   const {
@@ -27,6 +28,7 @@ const SimonGame = () => {
   } = useSelector((state: SimonState) => state);
 
   const handleButtonClick = (colorIndex: number) => {
+    console.log("Button clicked:", colorIndex, "current gameStatus:", gameStatus);
     if (gameStatus !== GAME_STATUS.WAITING) return;
     dispatch(handleClickColorButtonThunk(colorIndex));
   };
