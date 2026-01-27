@@ -13,6 +13,10 @@ import {
 import { ColorIndicator } from "./ColorIndicator";
 import { Stack } from "@mui/system";
 
+// ==================== UI CONSTANTS ====================
+const ACTIVE_BUTTON_OPACITY = 1; // Full brightness when active
+const INACTIVE_BUTTON_OPACITY = 0.6; // Dimmed when inactive
+
 // ==================== REACT COMPONENT ====================
 const SimonGame = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -68,7 +72,7 @@ const SimonGame = () => {
             disabled={gameStatus !== GAME_STATUS.WAITING}
             style={{
               backgroundColor: color,
-              opacity: activeButton === index ? 1 : 0.6,
+              opacity: activeButton === index ? ACTIVE_BUTTON_OPACITY : INACTIVE_BUTTON_OPACITY,
             }}
           >
             {color}

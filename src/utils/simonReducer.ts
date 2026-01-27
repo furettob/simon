@@ -1,12 +1,10 @@
 import { getInterval, intervalType } from "./intervals";
 import {
   playSound,
-  playGameOverSequence,
-  playSuccessSequence,
   type Frequence,
-  frequencies,
 } from "./sound";
 import type { UnknownAction, ThunkDispatch } from "@reduxjs/toolkit";
+import { getSuccessThreshold } from "./success";
 
 // ==================== TYPES ====================
 export type AppDispatch = ThunkDispatch<SimonState, undefined, UnknownAction>;
@@ -81,7 +79,7 @@ export const playSequenceThunk =
 export const waitThunk =
   () => async (dispatch: AppDispatch, getState: () => SimonState) => {
     dispatch(setStatus(GAME_STATUS.WAITING));
-    const { sequence, playerSequence, timeoutRef } = getState();
+    const { sequence, playerSequence, timeoutRef, skillLevel } = getState();
 
     clearTimeout(timeoutRef);
 
@@ -97,46 +95,40 @@ export const waitThunk =
       ) {
         dispatch(gameOverThunk(null));
       }
-    }, 5000);
+    }, getInterval({ intervalType: intervalType.gameOverTimeout, skillLevel }));
 
-    dispatch({ type: SET_TIMEOUT_REF, payload: gameOverTimeout });
+    dispatch({ type: SET_TIMEOUT_REF, payload: gameOverTimeout});
   };
 export const gameOverThunk =
   (colorIndex: number | null) => async (dispatch: AppDispatch) => {
     // TODO: what the real game do when timeout? In terms of user feedback?
     dispatch({ type: SET_STATUS, payload: GAME_STATUS.SHOWING });
-    playGameOverSequence();
     for (let i = 0; i < 3; i++) {
-      dispatch(ligtAndSoundFeedbackThunk({
+      await dispatch(ligtAndSoundFeedbackThunk({
         colorIndex,
         durationMs: getInterval({ intervalType: intervalType.shortFeedback }),
         frequence: "gameOver",
       }));
-      await sleep(getInterval({ intervalType: intervalType.shortFeedback }));
-      dispatch(setActiveButton(colorIndex));
-      await sleep(getInterval({ intervalType: intervalType.shortFeedback }));
-      dispatch(setActiveButton(null));
-      await sleep(getInterval({ intervalType: intervalType.shortPause }));
     }
     dispatch(resetGame());
     dispatch({ type: SET_STATUS, payload: GAME_STATUS.IDLE });
   };
 
 export const successThunk =
-  () => async (dispatch: AppDispatch, getState: () => SimonState) => {
-    const { activeButton } = getState();
-    console.log("Game Over! ", activeButton);
+() => async (dispatch: AppDispatch) => {
     dispatch({ type: SET_STATUS, payload: GAME_STATUS.SHOWING });
-    playSuccessSequence();
-    setActiveButton(null);
+    dispatch(setActiveButton(null));
     await sleep(getInterval({ intervalType: intervalType.shortPause }));
-    setActiveButton(activeButton);
-    await sleep(getInterval({ intervalType: intervalType.shortFeedback }));
-    setActiveButton(null);
-    await sleep(getInterval({ intervalType: intervalType.shortPause }));
-    setActiveButton(activeButton);
-    await sleep(getInterval({ intervalType: intervalType.shortFeedback }));
-    setActiveButton(null);
+    
+    const successFrequencies: Frequence[] = ["success", "success2", "success3", "success4"];
+    for (let i = 0; i < 12; i++) {
+      await dispatch(ligtAndSoundFeedbackThunk({
+        colorIndex: i % 4,
+        durationMs: getInterval({ intervalType: intervalType.glimpseFeedback }),
+        frequence: successFrequencies[i % 4],
+      }));
+    }
+
     dispatch(resetGame());
     dispatch({ type: SET_STATUS, payload: GAME_STATUS.IDLE });
   };
@@ -192,7 +184,7 @@ export const handleClickColorButtonThunk =
 
     // Correct input - check if sequence is complete
     if (playerSequence.length === sequence.length) {
-      if (sequence.length === 8) {
+      if (sequence.length === getSuccessThreshold({skillLevel})) {
         dispatch(successThunk());
       } else {
         dispatch(playNewLevelThunk());

@@ -4,6 +4,7 @@ export const intervalType = {
   gameOverTimeout: "gameOverTimeout",
   pauseBeforeNextLevel: "pauseBeforeNextLevel",
   shortFeedback: "shortFeedback",
+  glimpseFeedback: "glimpseFeedback",
   shortPause: "shortPause",
 } as const;
 
@@ -33,6 +34,8 @@ export const getInterval = ({
     case "shortFeedback":
       return 200;
     case "shortPause":
+      return 100;
+    case "glimpseFeedback":
       return 100;
     default:
       return 500; // Default interval

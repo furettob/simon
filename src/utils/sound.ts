@@ -1,15 +1,34 @@
-import { sleep } from "./simonReducer";
-
-export const frequencies = {
-  yellow: 329.63, // E4
-  red: 261.63, // C4
-  blue: 220.0, // A3
-  green: 164.81, // E3
-  gameOver: 110.0, // A2
-  success: 523.25, // C5
+// ==================== FREQUENCY OBJECTS ====================
+const FREQUENCIES = {
+  YELLOW: 329.63, // E4
+  RED: 261.63, // C4
+  BLUE: 220.0, // A3
+  GREEN: 164.81, // E3
+  GAME_OVER: 200, // G3
+  SUCCESS: 523.25, // C5
+  SUCCESS2: 659.25, // E5
+  SUCCES3: 783.99, // G5
+  SUCCESS4: 1046.50, // C6
 } as const;
 
-export type Frequence = keyof typeof frequencies
+// ==================== AUDIO GAIN CONSTANTS ====================
+const INITIAL_GAIN = 0.3; // 30% volume at start of playback
+const END_GAIN = 0.01; // Nearly silent volume at end of fade-out
+
+// For backwards compatibility, export as const object
+export const frequencies = {
+  yellow: FREQUENCIES.YELLOW,
+  red: FREQUENCIES.RED,
+  blue: FREQUENCIES.BLUE,
+  green: FREQUENCIES.GREEN,
+  gameOver: FREQUENCIES.GAME_OVER,
+  success: FREQUENCIES.SUCCESS,
+  success2: FREQUENCIES.SUCCESS2,
+  success3: FREQUENCIES.SUCCES3,
+  success4: FREQUENCIES.SUCCESS4,
+} as const;
+
+export type Frequence = keyof typeof frequencies;
 
 // ==================== AUDIO CONTEXT SINGLETON ====================
 // Create a single reusable AudioContext to avoid memory leaks from creating multiple contexts
@@ -28,10 +47,10 @@ let currentGainNode = null as GainNode | null;
 // ==================== HELPER FUNCTIONS ====================
 export const playSound = ({
   frequence,
-  durationMs = 300,
+  durationMs,
 }: {
   frequence: Frequence;
-  durationMs?: number;
+  durationMs: number;
 }) => {
   // Clean up previous oscillator and gain node to prevent resource leaks
   if (currentOscillator) {
@@ -64,10 +83,10 @@ export const playSound = ({
   oscillator.type = "sine";
 
   // Set initial gain to 0.3 (30% volume) at the start of playback
-  gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+  gainNode.gain.setValueAtTime(INITIAL_GAIN, audioContext.currentTime);
   // Fade out the sound exponentially from 0.3 to 0.01 over the specified interval
   gainNode.gain.exponentialRampToValueAtTime(
-    0.01, // End volume (nearly silent)
+    END_GAIN, // End volume (nearly silent)
     audioContext.currentTime + durationSec,
   );
 
@@ -79,104 +98,4 @@ export const playSound = ({
   // Store references for cleanup
   currentOscillator = oscillator;
   currentGainNode = gainNode;
-};
-
-export const playGameOverSequence = async () => {
-  const audioContext = getAudioContext();
-
-  // Create a buzzing sad tone using a low frequency with tremolo effect
-  const baseFrequency = 200; // Low frequency for sad/error tone
-  const tremoloDuration = 0.6; // Total duration in seconds
-
-  const oscillator = audioContext.createOscillator();
-  const gainNode = audioContext.createGain();
-  const tremoloOscillator = audioContext.createOscillator(); // For buzzing/tremolo effect
-
-  oscillator.connect(gainNode);
-  gainNode.connect(audioContext.destination);
-
-  // Connect tremolo oscillator to modulate the gain
-  tremoloOscillator.connect(gainNode.gain);
-
-  // Set up base tone
-  oscillator.frequency.value = baseFrequency;
-  oscillator.type = "sine";
-
-  // Set up tremolo (buzzing effect) - fast oscillation of volume
-  tremoloOscillator.frequency.value = 5; // 5Hz buzzing effect
-  tremoloOscillator.type = "sine";
-
-  // Create the tremolo envelope (0.1 to 0.3 = buzzing between 10% and 30% volume)
-  gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
-  tremoloOscillator.start(audioContext.currentTime);
-
-  // Gradually lower the pitch while fading out (sad/descending effect)
-  oscillator.frequency.setTargetAtTime(
-    baseFrequency * 0.7,
-    audioContext.currentTime,
-    0.3, // Time constant for exponential decay
-  );
-
-  // Fade out over the duration
-  gainNode.gain.exponentialRampToValueAtTime(
-    0.01,
-    audioContext.currentTime + tremoloDuration,
-  );
-
-  // Start and stop everything
-  oscillator.start(audioContext.currentTime);
-  oscillator.stop(audioContext.currentTime + tremoloDuration);
-  tremoloOscillator.stop(audioContext.currentTime + tremoloDuration);
-
-  await sleep(1000); // Wait for the sequence to finish
-};
-
-export const playSuccessSequence = async () => {
-  const audioContext = getAudioContext();
-
-  // Create a buzzing sad tone using a low frequency with tremolo effect
-  const baseFrequency = 200; // Low frequency for sad/error tone
-  const tremoloDuration = 0.6; // Total duration in seconds
-
-  const oscillator = audioContext.createOscillator();
-  const gainNode = audioContext.createGain();
-  const tremoloOscillator = audioContext.createOscillator(); // For buzzing/tremolo effect
-
-  oscillator.connect(gainNode);
-  gainNode.connect(audioContext.destination);
-
-  // Connect tremolo oscillator to modulate the gain
-  tremoloOscillator.connect(gainNode.gain);
-
-  // Set up base tone
-  oscillator.frequency.value = baseFrequency;
-  oscillator.type = "sine";
-
-  // Set up tremolo (buzzing effect) - fast oscillation of volume
-  tremoloOscillator.frequency.value = 5; // 5Hz buzzing effect
-  tremoloOscillator.type = "sine";
-
-  // Create the tremolo envelope (0.1 to 0.3 = buzzing between 10% and 30% volume)
-  gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
-  tremoloOscillator.start(audioContext.currentTime);
-
-  // Gradually lower the pitch while fading out (sad/descending effect)
-  oscillator.frequency.setTargetAtTime(
-    baseFrequency * 0.7,
-    audioContext.currentTime,
-    0.3, // Time constant for exponential decay
-  );
-
-  // Fade out over the duration
-  gainNode.gain.exponentialRampToValueAtTime(
-    0.01,
-    audioContext.currentTime + tremoloDuration,
-  );
-
-  // Start and stop everything
-  oscillator.start(audioContext.currentTime);
-  oscillator.stop(audioContext.currentTime + tremoloDuration);
-  tremoloOscillator.stop(audioContext.currentTime + tremoloDuration);
-
-  await sleep(1000); // Wait for the sequence to finish
 };
