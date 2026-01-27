@@ -2,6 +2,7 @@ import {
   intervalMap,
   playColorButtonSound,
   playGameOverSequence,
+  playSuccessSequence,
 } from "./sound";
 import type { UnknownAction, ThunkDispatch } from "@reduxjs/toolkit";
 
@@ -34,45 +35,45 @@ const SET_TIMEOUT_REF = "SET_TIMEOUT_REF";
 export const sleep = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
 
-// TODO: make this a thunk
-const lightUpButton = async (
-  { colorIndex, skillLevel }: { colorIndex: number; skillLevel: number },
-  dispatch: AppDispatch,
-) => {
-  // Light up button
-  dispatch(setActiveButton(colorIndex));
-  playColorButtonSound({ colorIndex, skillLevel });
+export const lightUpButtonThunk =
+  ({
+    colorIndex,
+    skillLevel,
+  }: {
+    colorIndex: number;
+    skillLevel: number;
+  }) =>
+  async (dispatch: AppDispatch) => {
+    // Light up button
+    dispatch(setActiveButton(colorIndex));
+    playColorButtonSound({ colorIndex, skillLevel });
 
-  await sleep(intervalMap[skillLevel - 1] * 1000); // Button stays lit
+    await sleep(intervalMap[skillLevel - 1] * 1000); // Button stays lit
 
-  // Turn off button
-  dispatch(setActiveButton(null));
+    // Turn off button
+    dispatch(setActiveButton(null));
 
-  await sleep(200); // Gap between buttons
-};
+    await sleep(200); // Gap between buttons
+  };
 
-// TODO: make this a thunk
-const playSequence = async (
-  { sequence, skillLevel }: { sequence: number[]; skillLevel: number },
-  dispatch: AppDispatch,
-) => {
-  // Show the sequence
-  await sleep(500); // Initial delay
+export const playSequenceThunk =
+  ({
+    sequence,
+    skillLevel,
+  }: {
+    sequence: number[];
+    skillLevel: number;
+  }) =>
+  async (dispatch: AppDispatch) => {
+    // Show the sequence
+    await sleep(500); // Initial delay
 
-  for (let i = 0; i < sequence.length; i++) {
-    console.log(
-      "Playing sequence step:",
-      i,
-      "/",
-      sequence.length,
-      "Color:",
-      COLORS[sequence[i]],
-      " at ",
-      Date.now() % 60_000,
-    );
-    await lightUpButton({ colorIndex: sequence[i], skillLevel }, dispatch);
-  }
-};
+    for (let i = 0; i < sequence.length; i++) {
+      await dispatch(
+        lightUpButtonThunk({ colorIndex: sequence[i], skillLevel })
+      );
+    }
+  };
 export const waitThunk =
   () => async (dispatch: AppDispatch, getState: () => SimonState) => {
     dispatch(setStatus(GAME_STATUS.WAITING));
@@ -84,33 +85,40 @@ export const waitThunk =
       const { playerSequence: newPlayerSequence, sequence: newGameSequence } =
         getState();
 
-      // TODO: better condition to detect inactivity
       if (
         // Player did not submit an input in the last 5s
         newPlayerSequence.length <= playerSequence.length &&
         // Player did not advance level
         newGameSequence.length === sequence.length
       ) {
-        console.log("GAME OVER TRIGGERED BY TIMEOUT: ", {
-          newSequenceLength: newGameSequence.length,
-          oldSequenceLength: sequence.length,
-          newPlayerSequenceLength: newPlayerSequence.length,
-          oldPlayerSequenceLength: playerSequence.length,
-        });
-        dispatch(gameOverThunk());
-      } else {
-        console.log("Player active, no game over.");
+        dispatch(gameOverThunk(null));
       }
     }, 5000);
 
     dispatch({ type: SET_TIMEOUT_REF, payload: gameOverTimeout });
   };
 export const gameOverThunk =
+  (colorIndex: number | null) => async (dispatch: AppDispatch) => {
+    // TODO: what the real game do when timeout? In terms of user feedback?
+    dispatch({ type: SET_STATUS, payload: GAME_STATUS.SHOWING });
+    console.log("Game Over! ", colorIndex);
+    playGameOverSequence();
+    for (let i = 0; i < 3; i++) {
+      dispatch(setActiveButton(colorIndex));
+      await sleep(200);
+      dispatch(setActiveButton(null));
+      await sleep(100);
+    }
+    dispatch(resetGame());
+    dispatch({ type: SET_STATUS, payload: GAME_STATUS.IDLE });
+  };
+
+export const successThunk =
   () => async (dispatch: AppDispatch, getState: () => SimonState) => {
     const { activeButton } = getState();
     console.log("Game Over! ", activeButton);
     dispatch({ type: SET_STATUS, payload: GAME_STATUS.SHOWING });
-    playGameOverSequence();
+    playSuccessSequence();
     setActiveButton(null);
     await sleep(100);
     setActiveButton(activeButton);
@@ -141,7 +149,7 @@ export const playNewLevelThunk =
     // Get the updated state with the new sequence
     const { sequence, skillLevel } = getState();
 
-    await playSequence({ sequence, skillLevel }, dispatch);
+    dispatch(playSequenceThunk({ sequence, skillLevel }));
 
     // After showing sequence, set status to waiting
     dispatch(waitThunk());
@@ -165,21 +173,21 @@ export const handleClickColorButtonThunk =
     // Check if current input is wrong
     if (playerSequence[currentIndex] !== sequence[currentIndex]) {
       // TODO: introduce strictMode AKA gameMode
-      dispatch(gameOverThunk());
+      dispatch(gameOverThunk(colorIndex));
       return;
     }
 
-    await lightUpButton(
-      { colorIndex, skillLevel: getState().skillLevel },
-      dispatch,
-    );
-
-    await sleep(100);
+    await dispatch(lightUpButtonThunk(
+      { colorIndex, skillLevel: getState().skillLevel }
+    ));
 
     // Correct input - check if sequence is complete
     if (playerSequence.length === sequence.length) {
-      dispatch(playNewLevelThunk());
-      return;
+      if (sequence.length === 8) {
+        dispatch(successThunk());
+      } else {
+        dispatch(playNewLevelThunk());
+      }
     } else {
       dispatch(waitThunk());
     }
@@ -231,7 +239,7 @@ export const initialState = {
   sequence: [],
   playerSequence: [],
   score: 0,
-  skillLevel: 1,
+  skillLevel: 4,
   activeButton: null,
 };
 

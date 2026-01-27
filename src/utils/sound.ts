@@ -131,3 +131,55 @@ export const playGameOverSequence = async () => {
 
   await sleep(1000); // Wait for the sequence to finish
 };
+
+export const playSuccessSequence = async () => {
+  const audioContext = getAudioContext();
+
+  // Create a buzzing sad tone using a low frequency with tremolo effect
+  const baseFrequency = 200; // Low frequency for sad/error tone
+  const tremoloDuration = 0.6; // Total duration in seconds
+  
+  const oscillator = audioContext.createOscillator();
+  const gainNode = audioContext.createGain();
+  const tremoloOscillator = audioContext.createOscillator(); // For buzzing/tremolo effect
+
+  oscillator.connect(gainNode);
+  gainNode.connect(audioContext.destination);
+  
+  // Connect tremolo oscillator to modulate the gain
+  tremoloOscillator.connect(gainNode.gain);
+
+  // Set up base tone
+  oscillator.frequency.value = baseFrequency;
+  oscillator.type = "sine";
+
+  // Set up tremolo (buzzing effect) - fast oscillation of volume
+  tremoloOscillator.frequency.value = 5; // 5Hz buzzing effect
+  tremoloOscillator.type = "sine";
+
+  // Create the tremolo envelope (0.1 to 0.3 = buzzing between 10% and 30% volume)
+  gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+  tremoloOscillator.start(audioContext.currentTime);
+
+  // Gradually lower the pitch while fading out (sad/descending effect)
+  oscillator.frequency.setTargetAtTime(
+    baseFrequency * 0.7,
+    audioContext.currentTime,
+    0.3, // Time constant for exponential decay
+  );
+
+  // Fade out over the duration
+  gainNode.gain.exponentialRampToValueAtTime(
+    0.01,
+    audioContext.currentTime + tremoloDuration,
+  );
+
+  // Start and stop everything
+  oscillator.start(audioContext.currentTime);
+  oscillator.stop(audioContext.currentTime + tremoloDuration);
+  tremoloOscillator.stop(audioContext.currentTime + tremoloDuration);
+
+  await sleep(1000); // Wait for the sequence to finish
+};
+
+
