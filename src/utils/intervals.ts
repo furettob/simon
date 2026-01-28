@@ -30,7 +30,7 @@ export const getInterval = ({
     case "gameOverTimeout":
       return gameOverTimeoutIntervals[intervalIndex];
     case "pauseBeforeNextLevel":
-      return 1000;
+      return 500;
     case "shortFeedback":
       return 200;
     case "shortPause":
