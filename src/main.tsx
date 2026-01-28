@@ -3,8 +3,8 @@ import { createRoot } from 'react-dom/client'
 import { Provider } from 'react-redux'
 import { configureStore } from '@reduxjs/toolkit'
 import './index.css'
-import SimonGame from './SimonGame'
-import { simonReducer, initialState } from './utils/simonReducer'
+import SimonGame from '@/components/SimonGame/SimonGame'
+import { simonReducer, initialState } from '@/utils/simonReducer'
 
 const simonStore = configureStore({
   reducer: simonReducer,

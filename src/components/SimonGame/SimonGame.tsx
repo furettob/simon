@@ -1,5 +1,5 @@
 import { useSelector, useDispatch } from "react-redux";
-import * as styles from "./SimonGame.module.scss";
+import styles from "./SimonGame.module.scss";
 import {
   COLORS,
   GAME_STATUS,
@@ -10,7 +10,7 @@ import {
   type SimonState,
   type AppDispatch,
 } from '@/utils/simonReducer'
-import { ColorIndicator } from "../../ColorIndicator";
+import { ColorIndicator } from '@/components/ColorIndicator/ColorIndicator';
 import { Stack } from "@mui/system";
 import classNames from "classnames";
 
@@ -51,7 +51,7 @@ const SimonGame = () => {
         </div>
         <div className={styles.simonDeviceWrapper}>
           <div className={styles.colorButtonsWrapper}>
-            <div className={"colorButtons"}>
+            <div className={styles.colorButtons}>
               {[COLORS[0], COLORS[1], COLORS[3], COLORS[2]].map((color) => (
                 <div
                   className={classNames(
@@ -78,7 +78,7 @@ const SimonGame = () => {
                 </div>
               ))}
             </div>
-            <div className="trademarkWrapper">
+            <div className={styles.trademarkWrapper}>
               <div className="trademarkSticker">
                 <div className="trademarkContent">
                   <div className="trademarkLogoWrapper">
@@ -113,10 +113,10 @@ const SimonGame = () => {
           </div>
         </div>
       </Stack>
-      <div className="debug_container">
+      <div className={styles.debugContainer}>
         <h3>Debug Info:</h3>
         <Stack direction="row" spacing={1}>
-          <span className="debugLabel">GS: </span>
+          <span className={styles.debugLabel}>GS: </span>
           {sequence.map((colorIndex: number, index: number) => (
             <ColorIndicator
               key={`${index}_${colorIndex}`}

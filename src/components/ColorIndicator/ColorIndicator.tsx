@@ -1,4 +1,4 @@
-import { COLORS } from "./utils/simonReducer";
+import { COLORS } from "@/utils/simonReducer";
 import classNames from "classnames";
 
 export const ColorIndicator = ({
