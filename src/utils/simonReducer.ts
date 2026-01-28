@@ -18,7 +18,7 @@ export const GAME_STATUS = {
   SUCCESS: "SUCCESS",
 };
 
-export const COLORS = ["red", "green", "blue", "yellow"] as const;
+export const COLORS = ["red", "blue", "yellow",  "green"] as const;
 
 // ==================== ACTION TYPES ====================
 const START_GAME = "START_GAME";
