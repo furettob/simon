@@ -1,31 +1,22 @@
-import { useSelector, useDispatch } from "react-redux";
-import {
-  GAME_STATUS,
-  resetGame,
-  playNewLevelThunk,
-  toggleSkillLevel,
-} from "@/utils/simonReducer";
-import type { SimonState, AppDispatch } from "@/utils/simonReducer";
+import { useSelector } from "react-redux";
+import type { SimonState } from "@/utils/simonReducer";
 import { ColorIndicator } from "@/components/ColorIndicator/ColorIndicator";
 import { Stack } from "@mui/system";
-import ColorButtons from "@/components/ColorButtons/ColorButtons";
-import styles from "./SimonGame.module.scss";
+import styles from "./SimonApp.module.scss";
+import SimonDevice from "@/components/SimonDevice/SimonDevice";
 
 const SimonGame = () => {
-  const dispatch = useDispatch<AppDispatch>();
-
   const {
-    gameStatus,
     sequence,
     playerSequence,
     score,
-    skillLevel,
   } = useSelector((state: SimonState) => state);
 
   return (
     <div>
       <Stack
         spacing={6}
+        padding={6}
         direction="row"
         alignItems="center"
         justifyContent="stretch"
@@ -38,25 +29,7 @@ const SimonGame = () => {
             <p>Score: {score}</p>
           </div>
         </div>
-        <div className={styles.simonDeviceWrapper}>
-          <ColorButtons />
-          <div>
-            <button
-              onClick={() => dispatch(playNewLevelThunk())}
-              disabled={gameStatus !== GAME_STATUS.IDLE}
-              aria-label="Start"
-            />
-
-            <button onClick={() => dispatch(resetGame())}>Reset</button>
-
-            <div>
-              <label>Skill Level (1,2,3,4)</label>
-              <button onClick={() => dispatch(toggleSkillLevel())}>
-                {skillLevel}
-              </button>
-            </div>
-          </div>
-        </div>
+        <SimonDevice />
       </Stack>
       <div className={styles.debugContainer}>
         <h3>Debug Info:</h3>

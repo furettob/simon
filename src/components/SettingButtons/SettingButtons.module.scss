@@ -1,0 +1,37 @@
+@import "@/assets/mixins.scss";
+
+.settingButtonsWrapper {
+  @include silverBackground;
+  height: 100%;
+  padding: 1em;
+  border-radius: 2%;
+  display: flex;
+  align-items: stretch;
+}
+
+.settingButtonsBorder {
+  border: 0.5em #242424 solid;
+  border-radius: 1em;
+  flex-grow: 1;
+  flex-wrap: wrap;
+}
+
+.blackBorder {
+  margin: -0.5em;
+  border: 0.5em #242424 solid;
+  border-radius: 1em;
+
+  &.settingButtons {
+    margin-bottom: 0;
+    flex-grow: 1;
+  }
+
+  &.gameName {
+    @include fontFaceSarpnach;
+    padding: 4px;
+
+    svg {
+      display: block;
+    }
+  }
+}
