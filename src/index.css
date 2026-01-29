@@ -4,8 +4,8 @@
 
 body {
   margin: 0;
-  background-color: #242424;
-  color:#eee;
+background: #52d1c4;
+background: linear-gradient(90deg,rgba(82, 209, 196, 1) 0%, rgba(199, 87, 165, 1) 50%, rgba(222, 171, 62, 1) 100%);  color:#eee;
 }
 
 button {
@@ -37,7 +37,7 @@ button {
   grid-template-rows: repeat(2, 47%);
 }
 
-.debug_container {
+.debugContainer {
   text-align: left;
 }
 

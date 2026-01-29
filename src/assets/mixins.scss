@@ -1,0 +1,27 @@
+@mixin silverBackground {
+background: -webkit-linear-gradient(
+    -22deg,
+    #dedede,
+    #ffffff 16%,
+    #dedede 21%,
+    #ffffff 24%,
+    #dedede 36%,
+    #ffffff 45%,
+    #a1a1a1 60%,
+    #dedede 72%,
+    #ffffff 80%,
+    #dedede 84%,
+    #a1a1a1
+  );
+}
+
+@font-face {
+  font-family: "sarpnach";
+  src: url("./fonts/Sarpanch/Sarpanch-ExtraBold.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@mixin fontFaceSarpnach {
+  font-family: 'sarpnach', sans-serif;
+}
