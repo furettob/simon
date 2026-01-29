@@ -1,0 +1,94 @@
+/* topSticker */
+.topStickerWrapper {
+  position: absolute;
+  width: 36%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  aspect-ratio: 1/1;
+  border-radius: 50%;
+  background-color: #242424;
+  padding: 6%;
+  font-size: 16px;
+}
+@media screen and (max-width: 900px) {
+  .topStickerWrapper {
+    font-size: 12px;
+  }
+}
+@media screen and (max-width: 700px) {
+  .topStickerWrapper {
+    font-size: 10px;
+  }
+}
+@media screen and (max-width: 600px) {
+  .topStickerWrapper {
+    font-size: 8px;
+  }
+}
+
+.topStickerSticker {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: -webkit-linear-gradient(
+    -22deg,
+    #dedede,
+    #ffffff 16%,
+    #dedede 21%,
+    #ffffff 24%,
+    #aaaaaa 27%,
+    #dedede 36%,
+    #ffffff 45%,
+    #ffffff 60%,
+    #dedede 72%,
+    #ffffff 80%,
+    #dedede 84%,
+    #a1a1a1
+  );
+  padding: 6%;
+  box-sizing: border-box;
+}
+.topStickerContent {
+  width: 100%;
+  aspect-ratio: 1/1;
+  box-sizing: border-box;
+  border-radius: 50%;
+  border: 0.125em solid #242424;
+  color: #242424;
+  text-align: center;
+  padding: 1em;
+  list-style: none;
+}
+
+.topStickerLogoWrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.topStickerLogo {
+  font-family:
+    "Helvetica Narrow", "Arial Narrow", Tahoma, Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  font-size: 6.5em;
+  line-height: 1em;
+}
+
+.topStickerLogoF {
+  color: #f00c11;
+}
+.topStickerLogoB {
+  color: #037aff;
+}
+
+.topStickerText {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+.topStickerTextDecoration {
+  font-size: 1em;
+}

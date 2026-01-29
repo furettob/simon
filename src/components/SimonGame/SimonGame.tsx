@@ -1,37 +1,26 @@
 import { useSelector, useDispatch } from "react-redux";
-import styles from "./SimonGame.module.scss";
 import {
-  COLORS,
   GAME_STATUS,
   resetGame,
   playNewLevelThunk,
   toggleSkillLevel,
-  handleClickColorButtonThunk,
-  type SimonState,
-  type AppDispatch,
-} from '@/utils/simonReducer'
-import { ColorIndicator } from '@/components/ColorIndicator/ColorIndicator';
+} from "@/utils/simonReducer";
+import type { SimonState, AppDispatch } from "@/utils/simonReducer";
+import { ColorIndicator } from "@/components/ColorIndicator/ColorIndicator";
 import { Stack } from "@mui/system";
-import classNames from "classnames";
+import ColorButtons from "@/components/ColorButtons/ColorButtons";
+import styles from "./SimonGame.module.scss";
 
-// ==================== REACT COMPONENT ====================
 const SimonGame = () => {
   const dispatch = useDispatch<AppDispatch>();
 
-  // Use selectors to get state
   const {
     gameStatus,
     sequence,
     playerSequence,
     score,
-    activeButton,
     skillLevel,
   } = useSelector((state: SimonState) => state);
-
-  const handleButtonClick = (colorIndex: number) => {
-    if (gameStatus !== GAME_STATUS.WAITING) return;
-    dispatch(handleClickColorButtonThunk(colorIndex));
-  };
 
   return (
     <div>
@@ -50,51 +39,7 @@ const SimonGame = () => {
           </div>
         </div>
         <div className={styles.simonDeviceWrapper}>
-          <div className={styles.colorButtonsWrapper}>
-            <div className={styles.colorButtons}>
-              {[COLORS[0], COLORS[1], COLORS[3], COLORS[2]].map((color) => (
-                <div
-                  className={classNames(
-                    "colorButton",
-                    `colorButton--${color}`,
-                    `bgColor--${color.toLowerCase()}`,
-                    {
-                      ["colorLightUp"]:
-                        activeButton !== null && COLORS[activeButton] === color,
-                    },
-                  )}
-                  key={color}
-                  onClick={() => handleButtonClick(COLORS.indexOf(color))}
-                >
-                  <div className="ligtherBackground" />
-                  <div className="light1" />
-                  <div className="light2" />
-                  <div
-                    className={classNames(
-                      "offColor",
-                      `bgColor--${color.toLowerCase()}`,
-                    )}
-                  />
-                </div>
-              ))}
-            </div>
-            <div className={styles.trademarkWrapper}>
-              <div className="trademarkSticker">
-                <div className="trademarkContent">
-                  <div className="trademarkLogoWrapper">
-                    <div>
-                      <span className="trademarkTextDecoration" style={{ opacity: 0 }}>Ⓡ</span>
-                      <span className="trademarkLogo trademarkLogoF">F</span>
-                      <span className="trademarkLogo trademarkLogoB">B</span>
-                      <span className="trademarkTextDecoration">Ⓡ</span>
-                    </div>
-                    <div className="trademarkText">FurettoB</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
+          <ColorButtons />
           <div>
             <button
               onClick={() => dispatch(playNewLevelThunk())}
