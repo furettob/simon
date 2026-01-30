@@ -1,4 +1,4 @@
-@import '@/assets/mixins.scss';
+@import "@/assets/mixins.scss";
 /* topSticker */
 .topStickerWrapper {
   position: absolute;
@@ -10,27 +10,6 @@
   border-radius: 50%;
   background-color: #242424;
   padding: 4%;
-  font-size: 12px;
-}
-@media screen and (max-width: 900px) {
-  .topStickerWrapper {
-    font-size: 10px;
-  }
-}
-@media screen and (max-width: 800px) {
-  .topStickerWrapper {
-    font-size: 8px;
-  }
-}
-@media screen and (max-width: 700px) {
-  .topStickerWrapper {
-    font-size: 6px;
-  }
-}
-@media screen and (max-width: 600px) {
-  .topStickerWrapper {
-    font-size: 6px;
-  }
 }
 
 .topStickerSticker {
@@ -51,6 +30,7 @@
   text-align: center;
   padding: 1em;
   list-style: none;
+  position: relative;
 }
 
 .topStickerLogoWrapper {
@@ -61,11 +41,10 @@
 }
 
 .topStickerLogo {
-  font-family:
-    "Helvetica Narrow", "Arial Narrow", Tahoma, Arial, Helvetica, sans-serif;
+  @include fontFaceBebasNeue;
   font-weight: bold;
-  font-size: 6.5em;
-  line-height: 1em;
+  font-size: 5em;
+  line-height: 1;
 }
 
 .topStickerLogoF {
@@ -77,10 +56,18 @@
 
 .topStickerText {
   font-family: Arial, Helvetica, sans-serif;
-  font-size: 1.5em;
+  font-size: 1.2em;
+  margin-top: -0.5em;
   font-weight: bold;
 }
 
+.topStickerLogoWithDecoration {
+  position: relative;
+}
+
 .topStickerTextDecoration {
-  font-size: 1em;
+  line-height: 1;
+  position: absolute;
+  bottom: 0;
+  transform: translate(15%, -100%);
 }

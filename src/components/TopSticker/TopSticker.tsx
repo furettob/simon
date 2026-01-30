@@ -7,7 +7,7 @@ const TopSticker = () => {
         <div className={styles.topStickerSticker}>
           <div className={styles.topStickerContent}>
             <div className={styles.topStickerLogoWrapper}>
-              <div>
+              <div className={styles.topStickerLogoWithDecoration}>
                 <span className={classNames(styles.topStickerLogo, styles.topStickerLogoF)}>F</span>
                 <span className={classNames(styles.topStickerLogo, styles.topStickerLogoB)}>B</span>
                 <span className={styles.topStickerTextDecoration}>Ⓡ</span>

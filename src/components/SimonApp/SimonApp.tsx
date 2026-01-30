@@ -6,43 +6,45 @@ import styles from "./SimonApp.module.scss";
 import SimonDevice from "@/components/SimonDevice/SimonDevice";
 
 const SimonGame = () => {
-  const {
-    sequence,
-    playerSequence,
-    score,
-  } = useSelector((state: SimonState) => state);
+  const { sequence, playerSequence, score } = useSelector(
+    (state: SimonState) => state,
+  );
 
   return (
     <div>
-      <Stack
-        spacing={6}
-        padding={6}
-        direction="row"
-        alignItems="center"
-        justifyContent="stretch"
-      >
-        <div>
-          <h1>Simon Game</h1>
-
-          <div>
-            <p>Level: {sequence.length}</p>
-            <p>Score: {score}</p>
-          </div>
-        </div>
+      <Stack alignItems="center" className={styles.simonAppContainer}>
         <SimonDevice />
       </Stack>
-      <div className={styles.debugContainer}>
-        <h3>Debug Info:</h3>
-        <Stack direction="row" spacing={1}>
-          <span className={styles.debugLabel}>GS: </span>
-          {sequence.map((colorIndex: number, index: number) => (
-            <ColorIndicator
-              key={`${index}_${colorIndex}`}
-              colorIndex={colorIndex}
-              isHighlighted={index === playerSequence.length}
-            />
-          ))}
+      <div className={styles.tmp}>
+        <Stack
+          spacing={6}
+          padding={6}
+          direction="row"
+          alignItems="center"
+          justifyContent="stretch"
+        >
+          <div>
+            <h1>Simon Game</h1>
+
+            <div>
+              <p>Level: {sequence.length}</p>
+              <p>Score: {score}</p>
+            </div>
+          </div>
         </Stack>
+        <div className={styles.debugContainer}>
+          <h3>Debug Info:</h3>
+          <Stack direction="row" spacing={1}>
+            <span className={styles.debugLabel}>GS: </span>
+            {sequence.map((colorIndex: number, index: number) => (
+              <ColorIndicator
+                key={`${index}_${colorIndex}`}
+                colorIndex={colorIndex}
+                isHighlighted={index === playerSequence.length}
+              />
+            ))}
+          </Stack>
+        </div>
       </div>
     </div>
   );

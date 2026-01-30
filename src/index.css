@@ -1,11 +1,38 @@
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: sans-serif, system-ui, Avenir, Helvetica, Arial;
+  font-size: 16px;
 }
 
 body {
   margin: 0;
-background: #52d1c4;
-background: linear-gradient(90deg,rgba(82, 209, 196, 1) 0%, rgba(199, 87, 165, 1) 50%, rgba(222, 171, 62, 1) 100%);  color:#eee;
+  background: #52d1c4;
+  min-height: 100vh;
+  background: linear-gradient(-20deg,rgba(82, 209, 196, 1) 0%, rgba(199, 87, 165, 1) 50%, rgba(222, 171, 62, 1) 100%);
+}
+@media screen and (max-width: 550px) {
+  body {
+    font-size: 15px;
+  }
+}
+@media screen and (max-width: 500px) {
+  body {
+    font-size: 14px;
+  }
+}
+@media screen and (max-width: 450px) {
+  body {
+    font-size: 12px;
+  }
+}
+@media screen and (max-width: 400px) {
+  body {
+    font-size: 10px;
+  }
+}
+@media screen and (max-width: 320px) {
+  body {
+    font-size: 6px;
+  }
 }
 
 button {
@@ -20,115 +47,12 @@ button {
   transition: border-color 0.25s;
 }
 
-.simonDeviceWrapper {
-  flex-grow: 1;
-}
-.colorButtonsWrapper {
-  position: relative;
-    width: 100%;
-  max-width: 800px;
-}
-.colorButtons {
-  position: relative;
-  aspect-ratio: 1 / 1;
-  display: grid;
-  gap: 6%;
-  grid-template-columns: repeat(2, 47%);
-  grid-template-rows: repeat(2, 47%);
-}
-
 .debugContainer {
   text-align: left;
 }
 
 .debugLabel {
   min-width: 24px;
-}
-
-.colorIndicatorWrapper {
-  position: relative;
-}
-
-.colorIndicator {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  border-radius: 4px;
-  margin-right: 4px;
-}
-
-.colorIndicatorHighlighted {
- height: 8px;
- position: absolute;
- bottom: 0;
- background-color: #eee;
- opacity: 0.7;  
- width: 100%;
-}
-
-/* BUTTON COLORS */
-.colorButton {
-  position: relative;
-  overflow: hidden;
-}
-.colorButton .offColor, .colorButton .ligtherBackground {
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  opacity: 1 ;
-  transition: opacity 0.05s;
-}
-.colorButton.colorLightUp .offColor {
-  opacity: 0;
-  transition: opacity 0.05s;
-}
-
-.colorButton .light1, .colorButton .light2 {
-  width: 50%;
-  height: 50%;
-  border-radius: 50%;
-  filter: blur(3px);
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-.colorButton .light1 {
-  background-color: rgba(255, 255, 255, 0.2);
-}
-.colorButton .light2 {
-  width: 60%;
-  height: 60%;
-  border-radius: 50%;
-  border: 10px solid rgba(255, 255, 255, 0.2);
-}
-
-/* SINGLE BUTTON UI */
-.colorButton--red {
-  border-top-left-radius: 100%;
-}
-.colorButton--red .ligtherBackground {
-  background-color: #ff7777;
-}
-.colorButton--blue {
-  border-top-right-radius: 100%;
-}
-.colorButton--blue .ligtherBackground {
-  background-color: #77aaff;
-}
-.colorButton--yellow {
-  border-bottom-right-radius: 100%;
-}
-.colorButton--yellow .ligtherBackground {
-  background-color: #ffdd77;
-}
-.colorButton--green {
-  border-bottom-left-radius: 100%;
-}
-.colorButton--green .ligtherBackground {
-  background-color: #77ff77;
 }
 
 /* COLORS */
@@ -143,99 +67,4 @@ button {
 }
 .bgColor--yellow {
   background-color: #fed93f;
-}
-
-/* TRADEMARK */
-.trademarkWrapper {
-  position: absolute;
-  width: 36%;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  aspect-ratio: 1/1;
-  border-radius: 50%;
-  background-color: #242424;
-  padding: 6%;
-  font-size: 16px;
-}
-@media screen and (max-width: 900px) {
-  .trademarkWrapper {
-    font-size: 12px;
-  }
-}
-@media screen and (max-width: 700px) {
-  .trademarkWrapper {
-    font-size: 10px;
-  }
-}
-@media screen and (max-width: 600px) {
-  .trademarkWrapper {
-    font-size: 8px;
-  }
-}
-
-  
-.trademarkSticker {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-   background:
-  -webkit-linear-gradient(
-    -22deg,
-    #dedede,
-    #ffffff 16%,
-    #dedede 21%,
-    #ffffff 24%,
-    #aaaaaa 27%,
-    #dedede 36%,
-    #ffffff 45%,
-    #ffffff 60%,
-    #dedede 72%,
-    #ffffff 80%,
-    #dedede 84%,
-    #a1a1a1
-  );
-  padding: 6%;
-  box-sizing: border-box;
-}
-.trademarkContent {
-  width: 100%;
-  aspect-ratio: 1/1;
-  box-sizing: border-box;
-  border-radius: 50%;
-  border: 0.125em solid #242424;
-  color: #242424;
-  text-align: center;
-  padding: 1em;
-}
-
-.trademarkLogoWrapper {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.trademarkLogo {
-  font-family: "Helvetica Narrow","Arial Narrow",Tahoma,Arial,Helvetica,sans-serif;
-  font-weight: bold;
-  font-size: 6.5em;
-  line-height: 1em;
-}
-
-.trademarkLogoF {
-  color: #f00c11
-}
-.trademarkLogoB {
-  color: #037aff
-}
-
-.trademarkText {
-    font-family: Arial,Helvetica,sans-serif;
-    font-size: 1.5em;
-    font-weight: bold;
-}
-
-.trademarkTextDecoration {
-    font-size: 1em;
 }

@@ -1,6 +1,6 @@
 .simonDeviceWrapper {
-  flex-grow: 1;
-  max-width: 600px;
+  width: 100%;
+  max-width: 560px;
 
   & .topShell {
     z-index: 2;
@@ -13,10 +13,10 @@
   & .bottomShell {
     border-radius: 100% / 8%;
     background-color: #242424;
-    width: 58%;
+    width: 64%;
     aspect-ratio: 1/1.2;
     margin: auto;
-    margin-top: -20%;
+    margin-top: -32%;
     padding: 0 6% 10% 6%;
   }
 }

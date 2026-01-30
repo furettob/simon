@@ -1,13 +1,16 @@
 import { useSelector, useDispatch } from "react-redux";
 import styles from "./SettingButtons.module.scss";
-import { GAME_STATUS, handleClickColorButtonThunk } from "@/utils/simonReducer";
+import { GAME_STATUS, playNewLevelThunk, resetGame, toggleSkillLevel } from "@/utils/simonReducer";
 import type { SimonState, AppDispatch } from "@/utils/simonReducer";
 import classNames from "classnames";
 import { Stack } from "@mui/system";
 import RubberButton from "@/components/RubberButton/RubberButton";
 
 const SettingButtons = () => {
+
   const dispatch = useDispatch<AppDispatch>();
+
+  const { gameStatus, skillLevel } = useSelector((state: SimonState) => state);
 
   return (
     <div className={styles.settingButtonsWrapper}>
@@ -28,6 +31,22 @@ const SettingButtons = () => {
               }}
               label="Last"
             />
+            <div>
+        <button
+          onClick={() => dispatch(playNewLevelThunk())}
+          disabled={gameStatus !== GAME_STATUS.IDLE}
+          aria-label="Start"
+        />
+
+        <button onClick={() => dispatch(resetGame())}>Reset</button>
+
+        <div>
+          <label>Skill Level (1,2,3,4)</label>
+          <button onClick={() => dispatch(toggleSkillLevel())}>
+            {skillLevel}
+          </button>
+        </div>
+      </div>
           </div>
         </Stack>
         <div className={classNames(styles.gameName, styles.blackBorder)}>
@@ -35,10 +54,10 @@ const SettingButtons = () => {
             <defs>
               <mask id="myMask">
                 <rect width="100%" height="100%" fill="white" />
-                <text id="title" x="50%" y="0" text-anchor="middle" dy="1em" fontSize="2em">
+                <text id="title" x="50%" y="0" text-anchor="middle" dy="1em" fontSize="2em" stroke="black" strokeWidth="0.05em">
                   redux
                 </text>
-                <text id="subtitle" x="50%" y="0" text-anchor="middle" dy="1em" fontSize="4.5em">
+                <text id="subtitle" x="50%" y="0" text-anchor="middle" dy="1em" fontSize="4.5em" stroke="black" strokeWidth="0.05em">
                   simon
                 </text>
               </mask>
