@@ -24,9 +24,13 @@
     height: 1em;
     display: block;
     margin: 1px;
-    background-color: rgba(0, 0, 0, 0.4);
+    background: rgba(0, 0, 0, 0.4);
+    cursor: pointer;
+    &:hover {
+      background: rgba(200, 200, 200, 0.4);
+    }
 
-    &:checked {
+    &:checked, &:checked:hover {
       background: repeating-linear-gradient(
         90deg,
         #242424,
@@ -35,6 +39,7 @@
         #666 0.35em
       );
       outline: 0.1em solid #666;
+      cursor: auto;
     }
   }
 }

@@ -1,5 +1,14 @@
 @import "@/assets/mixins.scss";
 
+.blue {
+  --mainColor: #2d8ceb;
+  --darkColor: #134c86;
+}
+.red {
+  --mainColor: #cd4a55;
+  --darkColor: #8f1923;
+}
+
 .wrapper {
   display: flex;
   flex-direction: column;
@@ -14,28 +23,18 @@
     5px 5px 15px 5px rgba(0, 0, 0, 0);
   border-radius: 50%;
   padding: 0.25em;
-
-  .blue & {
-    background-color: #2f73b7;
-  }
-  .red & {
-    background-color: #8f1923;
-  }
+  background-color: var(--darkColor);
 }
 
 .button {
+  font-size: 1em;
   height: 1.5em;
   width: 1.5em;
   border-radius: 50%;
-  padding:0;
+  padding: 0;
   display: block;
-
-  .blue & {
-    background-color: #267fda;
-  }
-  .red & {
-    background-color: #cd4a55;
-  }
+  background-color: var(--mainColor);
+  cursor: pointer;
 }
 
 .label {
@@ -44,5 +43,5 @@
   position: absolute;
   left: 50%;
   bottom: 0;
-  transform: translate(-50%,110%);
+  transform: translate(-50%, 110%);
 }
