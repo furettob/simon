@@ -26,13 +26,4 @@
     flex-grow: 1;
     padding: 0.5em;
   }
-
-  &.gameName {
-    @include fontFaceSarpnach;
-    padding: 4px;
-
-    svg {
-      display: block;
-    }
-  }
 }

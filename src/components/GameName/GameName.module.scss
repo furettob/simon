@@ -1,0 +1,26 @@
+@import "@/assets/mixins.scss";
+
+.gameName {
+  @include fontFaceSarpnach;
+  padding: 0.25em;
+
+  svg {
+    display: block;
+  }
+}
+
+@media screen and (max-width: 450px) {
+  .gameName {
+    font-size: 0.9em;
+  }
+}
+@media screen and (max-width: 400px) {
+  .gameName {
+    font-size: 0.8em;
+  }
+}
+@media screen and (max-width: 320px) {
+  .gameName {
+    font-size: 0.6em;
+  }
+}

@@ -10,7 +10,8 @@ import type { SimonState, AppDispatch } from "@/utils/simonReducer";
 import classNames from "classnames";
 import { Stack } from "@mui/system";
 import RubberButton from "@/components/RubberButton/RubberButton";
-import SwitchButton from "../SwitchButton/SwitchButton";
+import SwitchButton from "@/components/SwitchButton/SwitchButton";
+import GameName from "@/components/GameName/GameName";
 
 const SettingButtons = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -45,7 +46,7 @@ const SettingButtons = () => {
               }}
               label="Start"
             />
-              <RubberButton
+            <RubberButton
               color="blue"
               onClick={() => {
                 console.log("last clicked");
@@ -55,71 +56,15 @@ const SettingButtons = () => {
           </Stack>
           <Stack justifyContent="space-between" spacing="6" flexDirection="row">
             <SwitchButton
-            label="game"
-            options={["OFF",1,2,3]}
-            checkedOption={1}
+              label="game"
+              options={["OFF", 1, 2, 3]}
+              checkedOption={1}
             />
             <div>SKILL LEVEL</div>
           </Stack>
-          {/* <div id="lastGamebutton">
-            <div>
-              <button
-                onClick={() => dispatch(playNewLevelThunk())}
-                disabled={gameStatus !== GAME_STATUS.IDLE}
-                aria-label="Start"
-              />
-
-              <button onClick={() => dispatch(resetGame())}>Reset</button>
-
-              {/* <div>
-                <label>Skill Level (1,2,3,4)</label>
-                <button onClick={() => dispatch(toggleSkillLevel())}>
-                  {skillLevel}
-                </button>
-              </div>
-            </div>
-          </div>  */}
         </Stack>
-        <div className={classNames(styles.gameName, styles.blackBorder)}>
-          <svg width="100%" height="5.5em">
-            <defs>
-              <mask id="myMask">
-                <rect width="100%" height="100%" fill="white" />
-                <text
-                  id="title"
-                  x="50%"
-                  y="0"
-                  textAnchor="middle"
-                  dy="1em"
-                  fontSize="2em"
-                  stroke="black"
-                  strokeWidth="0.05em"
-                >
-                  redux
-                </text>
-                <text
-                  id="subtitle"
-                  x="50%"
-                  y="0"
-                  textAnchor="middle"
-                  dy="1em"
-                  fontSize="4.5em"
-                  stroke="black"
-                  strokeWidth="0.05em"
-                >
-                  simon
-                </text>
-              </mask>
-            </defs>
-            <rect
-              width="100%"
-              height="5.5em"
-              fill="#242424"
-              mask="url(#myMask)"
-              rx=".5em"
-              ry=".5em"
-            />
-          </svg>
+        <div className={styles.blackBorder}>
+          <GameName />
         </div>
       </Stack>
     </div>
