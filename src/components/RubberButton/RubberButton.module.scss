@@ -1,92 +1,48 @@
-.colorButtonsWrapper {
+@import "@/assets/mixins.scss";
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   position: relative;
-  width: 100%;
 }
 
-.colorButtons {
-  position: relative;
-  aspect-ratio: 1 / 1;
-  display: grid;
-  gap: 6%;
-  grid-template-columns: repeat(2, 47%);
-  grid-template-rows: repeat(2, 47%);
-}
-
-/* BUTTON COLORS */
-.colorButton {
-  position: relative;
-  overflow: hidden;
-  border-radius: 2%;
-}
-.colorButton .offColor,
-.colorButton .ligtherBackground {
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  opacity: 1;
-  transition: opacity 0.05s;
-}
-.colorButton.colorLightUp .offColor {
-  opacity: 0;
-  transition: opacity 0.05s;
-}
-
-.light {
-  width: 50%;
-  height: 50%;
+.shell {
   border-radius: 50%;
-  filter: blur(3px);
+  box-shadow:
+    inset 4px 4px 15px 0px #000000,
+    5px 5px 15px 5px rgba(0, 0, 0, 0);
+  border-radius: 50%;
+  padding: 0.25em;
+
+  .blue & {
+    background-color: #2f73b7;
+  }
+  .red & {
+    background-color: #8f1923;
+  }
+}
+
+.button {
+  height: 1.5em;
+  width: 1.5em;
+  border-radius: 50%;
+  padding:0;
+  display: block;
+
+  .blue & {
+    background-color: #267fda;
+  }
+  .red & {
+    background-color: #cd4a55;
+  }
+}
+
+.label {
+  @include fontFaceKellySlab;
+  font-size: 0.8em;
   position: absolute;
-  top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
-
-  &.light1 {
-    background-color: rgba(255, 255, 255, 0.2);
-  }
-  &.light2 {
-    width: 60%;
-    height: 60%;
-    border-radius: 50%;
-    border: 10px solid rgba(255, 255, 255, 0.2);
-  }
-}
-/* SINGLE BUTTON UI */
-.colorButton--red {
-  border-top-left-radius: 100%;
-}
-.colorButton--red .ligtherBackground {
-  background-color: #ff7777;
-}
-.colorButton--blue {
-  border-top-right-radius: 100%;
-}
-.colorButton--blue .ligtherBackground {
-  background-color: #77aaff;
-}
-.colorButton--yellow {
-  border-bottom-right-radius: 100%;
-}
-.colorButton--yellow .ligtherBackground {
-  background-color: #ffdd77;
-}
-.colorButton--green {
-  border-bottom-left-radius: 100%;
-}
-.colorButton--green .ligtherBackground {
-  background-color: #77ff77;
-}
-
-/* COLORS */
-.bgColor--red {
-  background-color: #fc2c2c;
-}
-.bgColor--green {
-  background-color: #03cc4c;
-}
-.bgColor--blue {
-  background-color: #1c8cff;
-}
-.bgColor--yellow {
-  background-color: #fed93f;
+  bottom: 0;
+  transform: translate(-50%,110%);
 }

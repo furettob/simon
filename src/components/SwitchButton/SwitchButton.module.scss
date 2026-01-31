@@ -1,0 +1,68 @@
+@import "@/assets/mixins.scss";
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.shell {
+  border-radius: 2px;
+  box-shadow:
+    inset 4px 4px 4px 0px rgba(34, 34, 34, 1),
+    5px 5px 15px 5px rgba(34, 34, 34, 0);
+  padding: 0;
+  background-color: #aaa;
+  display: flex;
+
+  & input {
+    border-radius: 0;
+    appearance: unset;
+    font-size: 1em;
+    width: 1.25em;
+    height: 1em;
+    display: block;
+    margin: 1px;
+    background-color: rgba(0, 0, 0, 0.4);
+
+    &:checked {
+      background: repeating-linear-gradient(
+        90deg,
+        #242424,
+        #242424 0.3em,
+        #666 0.3em,
+        #666 0.35em
+      );
+      outline: 0.1em solid #666;
+    }
+  }
+}
+
+.label {
+  @include fontFaceKellySlab;
+  font-size: 0.8em;
+  text-transform: uppercase;
+}
+
+.labels {
+  display: flex;
+
+  & .labelContainer {
+    width: 1.25em;
+    margin: 1px;
+    overflow: visible;
+
+    & .label {
+      text-align: center;
+    }
+
+    &:first-of-type .label {
+      text-align: start;
+    }
+
+    &:last-of-type .label {
+      text-align: end;
+    }
+  }
+}

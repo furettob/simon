@@ -29,6 +29,22 @@ background: -webkit-linear-gradient(
   font-style: normal;
 }
 
+@font-face {
+  font-family: "kellySlab";
+  src: url("./fonts/Kelly_Slab/KellySlab-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
 @mixin fontFaceBebasNeue {
   font-family: 'bebasNeue', sans-serif;
 }
+
+@mixin fontFaceSarpnach {
+  font-family: 'sarpnach', sans-serif;
+}
+
+@mixin fontFaceKellySlab {
+  font-family: 'kellySlab', sans-serif;
+}
+

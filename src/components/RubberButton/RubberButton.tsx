@@ -1,30 +1,26 @@
-import { useSelector, useDispatch } from "react-redux";
-import styles from "./RubberButton.module.scss";
-import {
-  COLORS,
-  GAME_STATUS,
-  handleClickColorButtonThunk,
-} from "@/utils/simonReducer";
-import type { SimonState, AppDispatch } from "@/utils/simonReducer";
 import classNames from "classnames";
-import TopSticker from "../TopSticker/TopSticker";
+import styles from "./RubberButton.module.scss";
 
-const RubberButton = () => {
-  const dispatch = useDispatch<AppDispatch>();
-
-  // Use selectors to get state
-  const { gameStatus, activeButton } = useSelector(
-    (state: SimonState) => state,
-  );
-
-  const handleButtonClick = (colorIndex: number) => {
-    if (gameStatus !== GAME_STATUS.WAITING) return;
-    dispatch(handleClickColorButtonThunk(colorIndex));
-  };
-
+const RubberButton = ({
+  color = "blue",
+  label,
+  onClick,
+}: {
+  color?: "blue" | "red";
+  onClick: () => void;
+  label: string;
+}) => {
   return (
-    <div className={styles.rubberButtonWrapper}>
-      <button>Ciao</button>
+    <div className={classNames(styles.wrapper, {
+          [styles.blue]: color === "blue",
+          [styles.red]: color === "red",
+        })}>
+      <div
+        className={styles.shell}
+      >
+        <button className={styles.button} onClick={onClick} />
+      </div>
+      <div className={styles.label} >{label.toUpperCase()}</div>
     </div>
   );
 };
