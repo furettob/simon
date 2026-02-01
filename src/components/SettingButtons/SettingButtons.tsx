@@ -1,11 +1,6 @@
 import { useSelector, useDispatch } from "react-redux";
 import styles from "./SettingButtons.module.scss";
-import {
-  GAME_STATUS,
-  playNewLevelThunk,
-  resetGame,
-  toggleSkillLevel,
-} from "@/utils/simonReducer";
+import { setGameMode, setSkillLevel } from "@/utils/simonReducer";
 import type { SimonState, AppDispatch } from "@/utils/simonReducer";
 import classNames from "classnames";
 import { Stack } from "@mui/system";
@@ -15,8 +10,23 @@ import GameName from "@/components/GameName/GameName";
 
 const SettingButtons = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const { skillLevel, gameMode } = useSelector((state: SimonState) => state);
 
-  const { gameStatus, skillLevel } = useSelector((state: SimonState) => state);
+  const handleGameModeOptionClicked = ({
+    option,
+  }: {
+    option: SimonState["gameMode"];
+  }) => {
+    dispatch(setGameMode(option));
+  };
+
+  const handleSkillLevelOptionClicked = ({
+    option,
+  }: {
+    option: SimonState["skillLevel"];
+  }) => {
+    dispatch(setSkillLevel(option));
+  };
 
   return (
     <div className={styles.settingButtonsWrapper}>
@@ -28,8 +38,7 @@ const SettingButtons = () => {
       >
         <Stack
           className={classNames(styles.settingButtons, styles.blackBorder)}
-          justifyContent="flex-end"
-          spacing={2}
+          justifyContent="space-around"
         >
           <Stack justifyContent="space-around" spacing="6" flexDirection="row">
             <RubberButton
@@ -58,9 +67,15 @@ const SettingButtons = () => {
             <SwitchButton
               label="game"
               options={["OFF", 1, 2, 3]}
-              checkedOption={1}
+              checkedOption={gameMode}
+              onOptionClick={handleGameModeOptionClicked}
             />
-            <div>SKILL LEVEL</div>
+            <SwitchButton
+              label="skill level"
+              options={[1, 2, 3, 4]}
+              checkedOption={skillLevel}
+              onOptionClick={handleSkillLevelOptionClicked}
+            />
           </Stack>
         </Stack>
         <div className={styles.blackBorder}>
