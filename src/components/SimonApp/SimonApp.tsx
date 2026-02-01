@@ -6,7 +6,7 @@ import styles from "./SimonApp.module.scss";
 import SimonDevice from "@/components/SimonDevice/SimonDevice";
 
 const SimonGame = () => {
-  const { sequence, playerSequence, score } = useSelector(
+  const { sequence, playerSequence } = useSelector(
     (state: SimonState) => state,
   );
 
@@ -25,10 +25,8 @@ const SimonGame = () => {
         >
           <div>
             <h1>Simon Game</h1>
-
             <div>
               <p>Level: {sequence.length}</p>
-              <p>Score: {score}</p>
             </div>
           </div>
         </Stack>

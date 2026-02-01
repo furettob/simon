@@ -28,7 +28,8 @@ const CHECK_INPUT = "CHECK_INPUT";
 const ADD_STEP_TO_SEQUENCE = "ADD_STEP_TO_SEQUENCE";
 const RESET_GAME = "RESET_GAME";
 const SET_ACTIVE_BUTTON = "SET_ACTIVE_BUTTON";
-const TOGGLE_SKILL_LEVEL = "TOGGLE_SKILL_LEVEL";
+const SET_SKILL_LEVEL = "SET_SKILL_LEVEL";
+const SET_GAME_MODE = "SET_GAME_MODE";
 const SET_TIMEOUT_REF = "SET_TIMEOUT_REF";
 
 // ==================== HELPERS ====================
@@ -210,15 +211,16 @@ export const setActiveButton = (colorIndex: number | null) => ({
   type: SET_ACTIVE_BUTTON,
   payload: colorIndex,
 });
-export const toggleSkillLevel = () => ({ type: TOGGLE_SKILL_LEVEL });
+export const setSkillLevel = (newSkillLevel: SimonState["skillLevel"]) => ({ type: SET_SKILL_LEVEL, payload: newSkillLevel });
+export const setGameMode = (newGameMode: SimonState["gameMode"]) => ({ type: SET_GAME_MODE, payload: newGameMode });
 
 // ==================== INITIAL STATE ====================
 export type SimonState = {
   gameStatus: string;
   sequence: number[];
   playerSequence: number[];
-  score: number;
   skillLevel: 1 | 2 | 3 | 4;
+  gameMode: "OFF" | 1 | 2 | 3;
   activeButton: number | null;
   timeoutRef?: number | undefined;
 };
@@ -232,15 +234,16 @@ type SimonAction =
   | { type: typeof ADD_STEP_TO_SEQUENCE }
   | { type: typeof RESET_GAME }
   | { type: typeof SET_ACTIVE_BUTTON; payload: number | null }
-  | { type: typeof TOGGLE_SKILL_LEVEL }
+  | { type: typeof SET_SKILL_LEVEL; payload: SimonState["skillLevel"] }
+  | { type: typeof SET_GAME_MODE; payload: SimonState["gameMode"] }
   | { type: typeof SET_TIMEOUT_REF; payload: number };
 
 export const initialState = {
   gameStatus: GAME_STATUS.IDLE,
   sequence: [],
   playerSequence: [],
-  score: 0,
   skillLevel: 4,
+  gameMode: "OFF",
   activeButton: null,
 };
 
@@ -254,7 +257,6 @@ export const simonReducer = (state: SimonState, action: SimonAction) => {
         gameStatus: GAME_STATUS.SHOWING,
         sequence: [firstColor],
         playerSequence: [],
-        score: 0,
       };
     }
     case SET_STATUS:
@@ -303,14 +305,16 @@ export const simonReducer = (state: SimonState, action: SimonAction) => {
       };
     }
 
-    case TOGGLE_SKILL_LEVEL:
+    case SET_SKILL_LEVEL:
       return {
         ...state,
-        // TODO: create util to derive new skillLevel
-        skillLevel:
-          state.skillLevel === 4
-            ? 1
-            : ((state.skillLevel + 1) as 1 | 2 | 3 | 4),
+        skillLevel: action.payload,
+      };
+
+    case SET_GAME_MODE:
+      return {
+        ...state,
+        gameMode: action.payload,
       };
 
     case SET_TIMEOUT_REF:
