@@ -1,6 +1,10 @@
 import { useSelector, useDispatch } from "react-redux";
 import styles from "./SettingButtons.module.scss";
-import { setGameMode, setSkillLevel } from "@/utils/simonReducer";
+import {
+  playNewLevelThunk,
+  setGameMode,
+  setSkillLevel,
+} from "@/utils/simonReducer";
 import type { SimonState, AppDispatch } from "@/utils/simonReducer";
 import classNames from "classnames";
 import { Stack } from "@mui/system";
@@ -10,7 +14,7 @@ import GameName from "@/components/GameName/GameName";
 
 const SettingButtons = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { skillLevel, gameMode } = useSelector((state: SimonState) => state);
+  const { skillLevel, gameMode, gameStatus } = useSelector((state: SimonState) => state);
 
   const handleGameModeOptionClicked = ({
     option,
@@ -51,7 +55,9 @@ const SettingButtons = () => {
             <RubberButton
               color="red"
               onClick={() => {
-                console.log("last clicked");
+                if (gameStatus === "IDLE" && gameMode !== "OFF") {
+                  dispatch(playNewLevelThunk());
+                }
               }}
               label="Start"
             />

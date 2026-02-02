@@ -242,13 +242,18 @@ export const initialState = {
   gameStatus: GAME_STATUS.IDLE,
   sequence: [],
   playerSequence: [],
-  skillLevel: 4,
+  skillLevel: 2,
   gameMode: "OFF",
   activeButton: null,
 };
 
 // ==================== REDUCER ====================
 export const simonReducer = (state: SimonState, action: SimonAction) => {
+  if (state.gameMode === "OFF") {
+    if (action.type !== SET_GAME_MODE && action.type !== SET_SKILL_LEVEL) {
+      return state
+    }
+  }
   switch (action.type) {
     case START_GAME: {
       const firstColor = Math.floor(Math.random() * 4);
@@ -298,10 +303,11 @@ export const simonReducer = (state: SimonState, action: SimonAction) => {
     }
 
     case RESET_GAME: {
-      const skillLevel = state.skillLevel;
+      const {skillLevel, gameMode} = state;
       return {
         ...initialState,
         skillLevel,
+        gameMode
       };
     }
 

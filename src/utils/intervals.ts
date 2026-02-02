@@ -10,9 +10,9 @@ export const intervalType = {
 
 export type IntervalType = keyof typeof intervalType;
 
-const buttonFeedbackIntervals = [1000, 750, 500, 300]; // Speed up sound decay based on skill level
-const betweenStepsIntervals = [250, 200, 150, 100]; // Speed up sound decay based on skill level
-const gameOverTimeoutIntervals = [5000, 4000, 3000, 2000]; // Speed up sound decay based on skill level
+const buttonFeedbackIntervals = [800, 400, 400, 250]; // Speed up sound decay based on skill level
+const betweenStepsIntervals = [250, 150, 150, 100]; // Speed up sound decay based on skill level
+const gameOverTimeoutIntervals = [4000, 3000, 2500, 2000]; // Speed up sound decay based on skill level
 
 export const getInterval = ({
   intervalType,
