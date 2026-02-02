@@ -9,12 +9,17 @@
   }
 }
 
-@media screen and (max-width: 500px) {
+@media screen and (max-width: 550px) {
   .gameName {
     font-size: 0.9em;
   }
 }
-@media screen and (max-width: 400px) {
+@media screen and (max-width: 500px) {
+  .gameName {
+    font-size: 0.85em;
+  }
+}
+@media screen and (max-width: 450px) {
   .gameName {
     font-size: 0.8em;
   }
