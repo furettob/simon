@@ -1,17 +1,40 @@
-export const getSuccessThreshold = ({skillLevel}: {skillLevel: number}): number => {
+export const getSuccessThreshold = ({
+  skillLevel,
+}: {
+  skillLevel: number;
+}): number => {
   switch (skillLevel) {
-    case 1: return 8;
-    case 2: return 8;
-    case 3: return 20;
-    case 4: return 3; // 31;
-    default: return 8;
+    case 1:
+      return 8;
+    case 2:
+      return 8;
+    case 3:
+      return 20;
+    case 4:
+      return 31;
+    default:
+      return 8;
   }
 };
 
 export const generateCompleteSequence = (sequenceLength: number): number[] => {
-  const newSequence = []
+  const newSequence = [];
   for (let i = 0; i < sequenceLength; i++) {
-     newSequence.push(Math.floor(Math.random() * 4));
+    newSequence.push(Math.floor(Math.random() * 4));
   }
-  return newSequence
-}
+  return newSequence;
+};
+
+export const LONGEST_SEQUENCE_MEMORY_KEY = "simonLongSeq";
+
+export const getLongestSequenceInMemory = ({
+  longestSequenceInState,
+}: {
+  longestSequenceInState: number[];
+}) => {
+  return longestSequenceInState.length > 0
+    ? longestSequenceInState
+    : (JSON.parse(
+        localStorage.getItem(LONGEST_SEQUENCE_MEMORY_KEY) || "[]",
+      ) as number[]);
+};
