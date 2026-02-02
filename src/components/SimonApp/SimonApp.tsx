@@ -6,7 +6,7 @@ import styles from "./SimonApp.module.scss";
 import SimonDevice from "@/components/SimonDevice/SimonDevice";
 
 const SimonGame = () => {
-  const { sequence, playerSequence } = useSelector(
+  const { sequenceLength, completeSequence, playerSequence } = useSelector(
     (state: SimonState) => state,
   );
 
@@ -26,7 +26,7 @@ const SimonGame = () => {
           <div>
             <h1>Simon Game</h1>
             <div>
-              <p>Level: {sequence.length}</p>
+              <p>Level: {sequenceLength}</p>
             </div>
           </div>
         </Stack>
@@ -34,7 +34,7 @@ const SimonGame = () => {
           <h3>Debug Info:</h3>
           <Stack direction="row" spacing={1}>
             <span className={styles.debugLabel}>GS: </span>
-            {sequence.map((colorIndex: number, index: number) => (
+            {completeSequence.map((colorIndex: number, index: number) => (
               <ColorIndicator
                 key={`${index}_${colorIndex}`}
                 colorIndex={colorIndex}
