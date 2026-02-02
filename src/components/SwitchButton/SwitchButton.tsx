@@ -7,6 +7,7 @@ type SwitchButtonProps<T> = {
   onOptionClick: ({ option }: { option: T }) => void;
   getKey?: (option: T) => string | number;
   renderLabel?: (option: T) => React.ReactNode;
+  disabled?: boolean;
 };
 
 const SwitchButton = <T,>({
@@ -16,6 +17,7 @@ const SwitchButton = <T,>({
   onOptionClick,
   getKey = (option) => String(option),
   renderLabel = (option) => String(option),
+  disabled,
 }: SwitchButtonProps<T>) => {
   return (
     <div className={styles.wrapper}>
@@ -28,14 +30,18 @@ const SwitchButton = <T,>({
             name={`radioGroup-${label}`}
             value={getKey(option)}
             checked={option === checkedOption}
-            onChange={() => onOptionClick({option})}
+            onChange={() => onOptionClick({ option })}
+            disabled={disabled}
           />
         ))}
       </div>
       <div className={styles.labels}>
         {options.map((option) => (
           <div key={getKey(option)} className={styles.labelContainer}>
-            <div className={styles.label} onClick={() => onOptionClick({option})}>
+            <div
+              className={styles.label}
+              onClick={() => !disabled && onOptionClick({ option })}
+            >
               {renderLabel(option)}
             </div>
           </div>

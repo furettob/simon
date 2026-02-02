@@ -1,7 +1,8 @@
 import { useSelector, useDispatch } from "react-redux";
 import styles from "./SettingButtons.module.scss";
 import {
-  playNewLevelThunk,
+  playLevelThunk,
+  playLongestSequenceThunk,
   setGameMode,
   setSkillLevel,
 } from "@/utils/simonReducer";
@@ -14,7 +15,12 @@ import GameName from "@/components/GameName/GameName";
 
 const SettingButtons = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { skillLevel, gameMode, gameStatus } = useSelector((state: SimonState) => state);
+  const {
+    skillLevel,
+    gameMode,
+    gameStatus,
+    playerSequence,
+  } = useSelector((state: SimonState) => state);
 
   const handleGameModeOptionClicked = ({
     option,
@@ -32,6 +38,9 @@ const SettingButtons = () => {
     dispatch(setSkillLevel(option));
   };
 
+  // Only possible to use change settings / start a game outside of a playing game
+  const settingButtonsEnabled = ["IDLE"].includes(gameStatus);
+
   return (
     <div className={styles.settingButtonsWrapper}>
       <Stack
@@ -47,26 +56,29 @@ const SettingButtons = () => {
           <Stack justifyContent="space-around" spacing="6" flexDirection="row">
             <RubberButton
               color="blue"
-              onClick={() => {
-                console.log("last clicked");
-              }}
+              onClick={() =>
+                dispatch(
+                  playLevelThunk(false),
+                )
+              }
               label="Last"
+              disabled={gameStatus !== "WAITING" || playerSequence.length > 0}
             />
             <RubberButton
               color="red"
               onClick={() => {
-                if (gameStatus === "IDLE" && gameMode !== "OFF") {
-                  dispatch(playNewLevelThunk());
-                }
+                dispatch(playLevelThunk());
               }}
               label="Start"
+              disabled={!settingButtonsEnabled || gameMode === "OFF"}
             />
             <RubberButton
               color="blue"
               onClick={() => {
-                console.log("last clicked");
+                dispatch(playLongestSequenceThunk())
               }}
               label="Longest"
+              disabled={!settingButtonsEnabled || gameMode === "OFF"}
             />
           </Stack>
           <Stack justifyContent="space-between" spacing="6" flexDirection="row">
@@ -75,12 +87,14 @@ const SettingButtons = () => {
               options={["OFF", 1, 2, 3]}
               checkedOption={gameMode}
               onOptionClick={handleGameModeOptionClicked}
+              disabled={!settingButtonsEnabled}
             />
             <SwitchButton
               label="skill level"
               options={[1, 2, 3, 4]}
               checkedOption={skillLevel}
               onOptionClick={handleSkillLevelOptionClicked}
+              disabled={!settingButtonsEnabled}
             />
           </Stack>
         </Stack>
