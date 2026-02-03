@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="512"
+   height="512"
+   viewBox="0 0 135.46666 135.46667"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25)"
+   sodipodi:docname="simon_favicon.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="false"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="px"
+     inkscape:zoom="0.2102413"
+     inkscape:cx="-190.25758"
+     inkscape:cy="-166.47538"
+     inkscape:window-width="1792"
+     inkscape:window-height="967"
+     inkscape:window-x="0"
+     inkscape:window-y="25"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1"
+     showborder="false"
+     borderlayer="false" />
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="Livello 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <circle
+       style="fill:none;stroke-width:0.558874"
+       id="circle5"
+       cx="67.73333"
+       cy="67.73333"
+       r="67.73333"
+       inkscape:export-filename="favicon2.png"
+       inkscape:export-xdpi="54.186672"
+       inkscape:export-ydpi="54.186672" />
+    <path
+       id="path8"
+       style="fill:#008000;stroke-width:0.512301"
+       d="M 64.977339,129.68659 V 90.135302 C 54.697502,88.868198 46.598311,80.769007 45.331206,70.48917 H 5.7799268 c 1.46169,32.06887 27.1285402,57.73572 59.1974122,59.19742 z"
+       sodipodi:nodetypes="ccccc" />
+    <path
+       id="path5"
+       style="fill:#1e90ff;fill-opacity:1;stroke-width:0.512301"
+       d="M 70.489328,5.7800747 V 45.331363 c 10.279837,1.267104 18.379028,9.366295 19.646133,19.646132 H 129.68674 C 128.22505,32.908623 102.5582,7.241777 70.489328,5.7800747 Z"
+       sodipodi:nodetypes="ccccc" />
+    <path
+       id="path6"
+       style="fill:#ff0000;stroke-width:0.512301"
+       d="M 64.977342,5.7800747 V 45.331363 C 54.697504,46.598467 46.598313,54.697658 45.331209,64.977495 H 5.7799268 C 7.2416234,32.908623 32.90847,7.241777 64.977342,5.7800747 Z"
+       sodipodi:nodetypes="ccccc" />
+    <path
+       id="path7"
+       style="fill:#ffd700;fill-opacity:1;stroke-width:0.512301"
+       d="M 70.489325,129.68659 V 90.135302 C 80.769163,88.868198 88.868354,80.769007 90.135458,70.48917 h 39.551282 c -1.4617,32.06887 -27.12854,57.73572 -59.197415,59.19742 z"
+       sodipodi:nodetypes="ccccc" />
+  </g>
+</svg>
