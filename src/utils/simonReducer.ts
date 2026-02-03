@@ -16,7 +16,6 @@ export const GAME_STATUS = {
 export const COLORS = ["red", "blue", "yellow", "green"] as const;
 
 // ==================== ACTION TYPES ====================
-const START_GAME = "START_GAME";
 const SET_STATUS = "SET_STATUS";
 const ADD_PLATER_INPUT_TO_SEQUENCE = "ADD_PLATER_INPUT_TO_SEQUENCE";
 const CHECK_INPUT = "CHECK_INPUT";
@@ -314,13 +313,12 @@ export type SimonState = {
   skillLevel: 1 | 2 | 3 | 4;
   gameMode: "OFF" | 1 | 2 | 3;
   activeButton: number | null;
-  timeoutRef?: number | undefined;
+  timeoutRef: number | undefined;
 };
 
 // ==================== ACTION TYPES ====================
 type SimonAction =
-  | { type: typeof START_GAME }
-  | { type: typeof SET_STATUS; payload: string }
+  | { type: typeof SET_STATUS; payload: SimonState["gameStatus"] }
   | { type: typeof ADD_PLATER_INPUT_TO_SEQUENCE; payload: number }
   | { type: typeof CHECK_INPUT }
   | { type: typeof INCREASE_SEQUENCE_LENGTH }
@@ -336,29 +334,24 @@ export const initialState: SimonState = {
   completeSequence: [],
   sequenceLength: 0,
   playerSequence: [],
+  longestSequence: [],
   skillLevel: 2,
   gameMode: "OFF",
   activeButton: null,
-  longestSequence: []
+  timeoutRef: undefined
 };
 
 // ==================== REDUCER ====================
-export const simonReducer = (state: SimonState, action: SimonAction) => {
+export const simonReducer = (state: SimonState = initialState, action: SimonAction): SimonState => {
+  if (state === undefined) {
+    return state
+  }
   if (state.gameMode === "OFF") {
     if (action.type !== SET_GAME_MODE && action.type !== SET_SKILL_LEVEL) {
       return state;
     }
   }
   switch (action.type) {
-    case START_GAME: {
-      const firstColor = Math.floor(Math.random() * 4);
-      return {
-        ...state,
-        gameStatus: GAME_STATUS.SHOWING,
-        sequence: [firstColor],
-        playerSequence: [],
-      };
-    }
     case SET_STATUS:
       return {
         ...state,
@@ -373,7 +366,6 @@ export const simonReducer = (state: SimonState, action: SimonAction) => {
 
     case ADD_PLATER_INPUT_TO_SEQUENCE: {
       if (state.gameStatus !== GAME_STATUS.WAITING) {
-        console.warn("Ignoring player input, not in WAITING state");
         return state;
       }
 
