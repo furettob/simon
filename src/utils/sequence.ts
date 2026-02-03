@@ -25,7 +25,7 @@ export const generateCompleteSequence = (sequenceLength: number): number[] => {
   return newSequence;
 };
 
-export const LONGEST_SEQUENCE_MEMORY_KEY = "simonLongSeq";
+export const LONGEST_SEQUENCE_MEMORY_KEY = "simonLongSeq2";
 
 export const getLongestSequenceInMemory = ({
   longestSequenceInState,
