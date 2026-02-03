@@ -23,11 +23,17 @@ jobs:
       # Step 3: Install dependencies
       - run: npm ci
 
-      # Step 4: Build the app
+      # Step 4: Build Vite app
       - run: npm run build
 
-      # Step 5: Deploy to gh-pages
+      # Step 5: Configure git identity + deploy
       - name: Deploy to GitHub Pages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: git config --global user.name "github-actions" && git config --global user.email "github-actions@github.com" && npx gh-pages -d dist --no-history
+        run: |
+          # Set git identity for commits
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          
+          # Deploy dist/ to gh-pages branch using the token
+          npx gh-pages -d dist --no-history --repo https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git
