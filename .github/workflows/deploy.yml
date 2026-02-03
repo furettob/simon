@@ -30,4 +30,4 @@ jobs:
       - name: Deploy to GitHub Pages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx gh-pages -d dist --no-history
+        run: git config --global user.name "github-actions" && git config --global user.email "github-actions@github.com" && npx gh-pages -d dist --no-history
