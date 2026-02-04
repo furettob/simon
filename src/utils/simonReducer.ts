@@ -1,7 +1,12 @@
 import { getInterval, intervalType } from "./intervals";
 import { playSound, type Frequence } from "./sound";
 import type { UnknownAction, ThunkDispatch } from "@reduxjs/toolkit";
-import { getSuccessThreshold, generateCompleteSequence, LONGEST_SEQUENCE_MEMORY_KEY, getLongestSequenceInMemory } from "./sequence";
+import {
+  getSuccessThreshold,
+  generateCompleteSequence,
+  LONGEST_SEQUENCE_MEMORY_KEY,
+  getLongestSequenceInMemory,
+} from "./sequence";
 
 // ==================== TYPES ====================
 export type AppDispatch = ThunkDispatch<SimonState, undefined, UnknownAction>;
@@ -25,7 +30,8 @@ const SET_ACTIVE_BUTTON = "SET_ACTIVE_BUTTON";
 const SET_SKILL_LEVEL = "SET_SKILL_LEVEL";
 const SET_GAME_MODE = "SET_GAME_MODE";
 const SET_TIMEOUT_REF = "SET_TIMEOUT_REF";
-const SET_LONGEST_SEQUENCE = "SET_LONGEST_SEQUENCE"
+const SET_ACTIVE_BUTTON_TIMEOUT_REF = "SET_ACTIVE_BUTTON_TIMEOUT_REF";
+const SET_LONGEST_SEQUENCE = "SET_LONGEST_SEQUENCE";
 
 // ==================== HELPERS ====================
 export const sleep = (ms: number) =>
@@ -41,7 +47,11 @@ export const ligtAndSoundFeedbackThunk =
     colorIndex?: number | null;
     durationMs: number;
   }) =>
-  async (dispatch: AppDispatch) => {
+  async (dispatch: AppDispatch, getState: () => SimonState) => {
+    const { activeButtonTimeoutRef: stateActiveButtonTimeout } = getState();
+    if (stateActiveButtonTimeout) {
+      clearTimeout(stateActiveButtonTimeout);
+    }
     // Light up button
     if (frequence) {
       playSound({ frequence, durationMs });
@@ -49,8 +59,14 @@ export const ligtAndSoundFeedbackThunk =
     if (colorIndex !== undefined) {
       dispatch(setActiveButton(colorIndex));
     }
+    const activeButtonTimeoutRef = setTimeout(() => {
+      dispatch(setActiveButton(null));
+    }, durationMs);
+    dispatch({
+      type: SET_ACTIVE_BUTTON_TIMEOUT_REF,
+      payload: activeButtonTimeoutRef,
+    });
     await sleep(durationMs); // Button stays lit
-    dispatch(setActiveButton(null));
   };
 
 export const playSequenceThunk =
@@ -193,30 +209,34 @@ export const playLevelThunk =
     dispatch(waitThunk()); // After showing sequence, set status to waiting
   };
 
-export const playLongestSequenceThunk = () => async (
-  dispatch: AppDispatch,
-  getState: () => SimonState,
-) => {
-  const { gameStatus, skillLevel, longestSequence} = getState();
-  if (gameStatus === GAME_STATUS.SHOWING) {
-    return;
-  }
-  const longestSequenceInMemory = getLongestSequenceInMemory({longestSequenceInState: longestSequence})
-  dispatch(setStatus(GAME_STATUS.SHOWING));
-  // Pause before reproducing
-  await sleep(
-    getInterval({
-      intervalType: intervalType.shortPause,
-    }),
-  );
+export const playLongestSequenceThunk =
+  () => async (dispatch: AppDispatch, getState: () => SimonState) => {
+    const { gameStatus, skillLevel, longestSequence } = getState();
+    if (gameStatus === GAME_STATUS.SHOWING) {
+      return;
+    }
+    const longestSequenceInMemory = getLongestSequenceInMemory({
+      longestSequenceInState: longestSequence,
+    });
+    dispatch(setStatus(GAME_STATUS.SHOWING));
+    // Pause before reproducing
+    await sleep(
+      getInterval({
+        intervalType: intervalType.shortPause,
+      }),
+    );
 
-  console.log("Repeating::: ", longestSequenceInMemory)
-  await dispatch(
-    playSequenceThunk({ completeSequence: longestSequenceInMemory, skillLevel, sequenceLength: longestSequenceInMemory.length }),
-  );
+    console.log("Repeating::: ", longestSequenceInMemory);
+    await dispatch(
+      playSequenceThunk({
+        completeSequence: longestSequenceInMemory,
+        skillLevel,
+        sequenceLength: longestSequenceInMemory.length,
+      }),
+    );
 
-  dispatch({ type: SET_STATUS, payload: "IDLE" }); // After showing sequence, set status to IDLE
-};
+    dispatch({ type: SET_STATUS, payload: "IDLE" }); // After showing sequence, set status to IDLE
+  };
 
 export const handleClickColorButtonThunk =
   (colorIndex: number) =>
@@ -242,18 +262,26 @@ export const handleClickColorButtonThunk =
     }
 
     // Possibly update longestSequence
-    const longestSequenceInMemory = getLongestSequenceInMemory({longestSequenceInState: longestSequence})
+    const longestSequenceInMemory = getLongestSequenceInMemory({
+      longestSequenceInState: longestSequence,
+    });
     // Update state to avoid reading from localStorage multiple times
     if (longestSequence.length === 0 && longestSequenceInMemory?.length) {
-      dispatch({type: SET_LONGEST_SEQUENCE, payload: longestSequenceInMemory})
+      dispatch({
+        type: SET_LONGEST_SEQUENCE,
+        payload: longestSequenceInMemory,
+      });
     }
     // Update both state and localStorage if player reached a longer sequence
     if (playerSequence.length > longestSequenceInMemory.length) {
-      localStorage.setItem(LONGEST_SEQUENCE_MEMORY_KEY, JSON.stringify(playerSequence))
-      dispatch({type: SET_LONGEST_SEQUENCE, payload: playerSequence})
+      localStorage.setItem(
+        LONGEST_SEQUENCE_MEMORY_KEY,
+        JSON.stringify(playerSequence),
+      );
+      dispatch({ type: SET_LONGEST_SEQUENCE, payload: playerSequence });
     }
 
-    await dispatch(
+    dispatch(
       ligtAndSoundFeedbackThunk({
         colorIndex,
         frequence: COLORS[colorIndex],
@@ -267,6 +295,13 @@ export const handleClickColorButtonThunk =
     // Correct input - check if sequence is complete
     if (playerSequence.length === sequenceLength) {
       if (sequenceLength === completeSequence.length) {
+        // Wait for the last sound to finish before playing the success sequence
+        await sleep(
+          getInterval({
+            intervalType: intervalType.buttonFeedback,
+            skillLevel,
+          }),
+        );
         dispatch(successThunk());
       } else {
         dispatch(playLevelThunk());
@@ -314,6 +349,7 @@ export type SimonState = {
   gameMode: "OFF" | 1 | 2 | 3;
   activeButton: number | null;
   timeoutRef: number | undefined;
+  activeButtonTimeoutRef: number | undefined;
 };
 
 // ==================== ACTION TYPES ====================
@@ -326,9 +362,14 @@ type SimonAction =
   | { type: typeof SET_ACTIVE_BUTTON; payload: number | null }
   | { type: typeof SET_SKILL_LEVEL; payload: SimonState["skillLevel"] }
   | { type: typeof SET_GAME_MODE; payload: SimonState["gameMode"] }
-  | { type: typeof SET_LONGEST_SEQUENCE; payload: SimonState["longestSequence"] }
-  | { type: typeof SET_TIMEOUT_REF; payload: number };
+  | {
+    type: typeof SET_LONGEST_SEQUENCE;
+    payload: SimonState["longestSequence"];
+  }
+  | { type: typeof SET_ACTIVE_BUTTON_TIMEOUT_REF; payload: number}
+  | { type: typeof SET_TIMEOUT_REF; payload: number }
 
+  
 export const initialState: SimonState = {
   gameStatus: "IDLE",
   completeSequence: [],
@@ -338,13 +379,17 @@ export const initialState: SimonState = {
   skillLevel: 2,
   gameMode: "OFF",
   activeButton: null,
-  timeoutRef: undefined
+  timeoutRef: undefined,
+  activeButtonTimeoutRef: undefined,
 };
 
 // ==================== REDUCER ====================
-export const simonReducer = (state: SimonState = initialState, action: SimonAction): SimonState => {
+export const simonReducer = (
+  state: SimonState = initialState,
+  action: SimonAction,
+): SimonState => {
   if (state === undefined) {
-    return state
+    return state;
   }
   if (state.gameMode === "OFF") {
     if (action.type !== SET_GAME_MODE && action.type !== SET_SKILL_LEVEL) {
@@ -420,11 +465,17 @@ export const simonReducer = (state: SimonState = initialState, action: SimonActi
         timeoutRef: action.payload,
       };
 
+    case SET_ACTIVE_BUTTON_TIMEOUT_REF:
+      return {
+        ...state,
+        activeButtonTimeoutRef: action.payload,
+      };
+
     case SET_LONGEST_SEQUENCE:
       return {
         ...state,
-        longestSequence: action.payload
-      }
+        longestSequence: action.payload,
+      };
 
     default:
       return state;
