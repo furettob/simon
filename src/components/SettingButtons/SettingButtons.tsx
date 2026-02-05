@@ -12,22 +12,27 @@ import { Stack } from "@mui/system";
 import RubberButton from "@/components/RubberButton/RubberButton";
 import SwitchButton from "@/components/SwitchButton/SwitchButton";
 import GameName from "@/components/GameName/GameName";
+import { useSnackbar } from "@/components/SnackbarProvider/SnackbarProvider";
+import { getSnackbarInfo } from "@/utils/snackbar";
 
 const SettingButtons = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const {
-    skillLevel,
-    gameMode,
-    gameStatus,
-    playerSequence,
-  } = useSelector((state: SimonState) => state);
+  const { skillLevel, gameMode, gameStatus, playerSequence } = useSelector(
+    (state: SimonState) => state,
+  );
 
+  const { showSnackbar } = useSnackbar();
   const handleGameModeOptionClicked = ({
     option,
   }: {
-    option: SimonState["gameMode"];
+    option: SimonState["gameMode"] | "OFF";
   }) => {
+    if (option === "OFF") {
+      showSnackbar(getSnackbarInfo({snackbarKey:"off"}));
+      return;
+    }
     dispatch(setGameMode(option));
+    showSnackbar(getSnackbarInfo({snackbarKey: "gameMode", gameMode: option}));
   };
 
   const handleSkillLevelOptionClicked = ({
@@ -56,11 +61,7 @@ const SettingButtons = () => {
           <Stack justifyContent="space-around" spacing="6" flexDirection="row">
             <RubberButton
               color="blue"
-              onClick={() =>
-                dispatch(
-                  playLevelThunk(false),
-                )
-              }
+              onClick={() => dispatch(playLevelThunk(false))}
               label="Last"
               disabled={gameStatus !== "WAITING" || playerSequence.length > 0}
             />
@@ -70,15 +71,15 @@ const SettingButtons = () => {
                 dispatch(playLevelThunk());
               }}
               label="Start"
-              disabled={!settingButtonsEnabled || gameMode === "OFF"}
+              disabled={!settingButtonsEnabled}
             />
             <RubberButton
               color="blue"
               onClick={() => {
-                dispatch(playLongestSequenceThunk())
+                dispatch(playLongestSequenceThunk());
               }}
               label="Longest"
-              disabled={!settingButtonsEnabled || gameMode === "OFF"}
+              disabled={!settingButtonsEnabled}
             />
           </Stack>
           <Stack justifyContent="space-between" spacing="6" flexDirection="row">

@@ -28,4 +28,10 @@
     gap: 1.5em;
     padding-top: 57%;
   }
+
+  @media screen and (max-width: 400px) {
+    &.settingButtons {
+      padding-top: 75%;
+    }
+  }
 }

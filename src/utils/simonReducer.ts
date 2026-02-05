@@ -346,7 +346,7 @@ export type SimonState = {
   playerSequence: number[];
   longestSequence: number[];
   skillLevel: 1 | 2 | 3 | 4;
-  gameMode: "OFF" | 1 | 2 | 3;
+  gameMode: 1 | 2 | 3;
   activeButton: number | null;
   timeoutRef: number | undefined;
   activeButtonTimeoutRef: number | undefined;
@@ -377,13 +377,12 @@ export const initialState: SimonState = {
   playerSequence: [],
   longestSequence: [],
   skillLevel: 2,
-  gameMode: "OFF",
+  gameMode: 1,
   activeButton: null,
   timeoutRef: undefined,
   activeButtonTimeoutRef: undefined,
 };
 
-// ==================== REDUCER ====================
 export const simonReducer = (
   state: SimonState = initialState,
   action: SimonAction,
@@ -391,11 +390,7 @@ export const simonReducer = (
   if (state === undefined) {
     return state;
   }
-  if (state.gameMode === "OFF") {
-    if (action.type !== SET_GAME_MODE && action.type !== SET_SKILL_LEVEL) {
-      return state;
-    }
-  }
+
   switch (action.type) {
     case SET_STATUS:
       return {

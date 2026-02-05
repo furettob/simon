@@ -1,0 +1,22 @@
+.wrapper {
+  padding: 1em;
+}
+
+.content {
+  padding: 1em;
+  border-radius: 0.5em;
+  color: #fff;
+
+  &.success {
+    background-color: #03cc4c;
+  }
+  &.info {
+    background-color: #1c8cff;
+  }
+  &.warning {
+    background-color: #fed93f;
+  }
+  &.error {
+    background-color: #fc2c2c;
+  }
+}
