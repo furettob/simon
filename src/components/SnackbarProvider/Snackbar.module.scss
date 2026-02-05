@@ -1,11 +1,38 @@
+.transitionWrapper {
+  display: flex;
+  justify-content: center;
+}
 .wrapper {
-  padding: 1em;
+  width: 560px;
+  overflow: hidden;
+  position: relative;
+
+  &.wide {
+    position: absolute;
+    width: 300px;
+    max-width: calc((100% - 560px) / 2);
+    height: 200px;
+    top: 1em;
+    left: calc(560px + (100% - 560px) / 2);
+  }
+
+  &.short {
+    position: fixed;
+    height: 150px;
+    bottom: 0;
+  }
 }
 
 .content {
-  padding: 1em;
+  padding: 2em;
   border-radius: 0.5em;
   color: #fff;
+  position: relative;
+  display: inline-block;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  top: 50%;
+  left: 50%;
 
   &.success {
     background-color: #03cc4c;
@@ -18,5 +45,24 @@
   }
   &.error {
     background-color: #fc2c2c;
+  }
+
+  .enter & {
+    top: -100%;
+    opacity: 0.8;
+  }
+  .enterActive & {
+    top: 50%;
+    opacity: 1;
+    transition: all 400ms ease-out;
+  }
+  .exit & {
+    top: 50%;
+    opacity: 0.8;
+  }
+  .exitActive & {
+    top: -100%;
+    opacity: 0;
+    transition: all 400ms ease-out;
   }
 }

@@ -8,6 +8,9 @@ import React, {
 } from "react";
 import styles from "./Snackbar.module.scss";
 import classNames from "classnames";
+import { getInterval } from "@/utils/intervals";
+import { CSSTransition } from "react-transition-group";
+import { useViewport } from "@/components/ViewportProvider/ViewportProvider";
 
 // Snackbar context
 type SnackbarContextType = {
@@ -22,23 +25,25 @@ export const SnackbarProvider: React.FC<{ children: React.ReactNode }> = ({
   const [snackbarInfo, setSnackbarInfo] = useState<SnackbarProps | null>(null);
   const timeoutRef = useRef<number | null>(null);
 
-  const showSnackbar = useCallback(
-    (snackbarInfo: SnackbarProps | null ) => {
-      // Replace current message
-      setSnackbarInfo(snackbarInfo);
+  const showSnackbar = useCallback((snackbarInfo: SnackbarProps | null) => {
+    // Replace current message
+    setSnackbarInfo(snackbarInfo ? { ...snackbarInfo, isVisible: true } : null);
 
-      // Reset timer
-      if (timeoutRef.current) {
-        window.clearTimeout(timeoutRef.current);
-      }
+    // Reset timer
+    if (timeoutRef.current) {
+      window.clearTimeout(timeoutRef.current);
+    }
 
-      timeoutRef.current = window.setTimeout(() => {
-        setSnackbarInfo(null);
+    timeoutRef.current = window.setTimeout(
+      () => {
+        setSnackbarInfo(
+          snackbarInfo ? { ...snackbarInfo, isVisible: false } : null,
+        );
         timeoutRef.current = null;
-      }, 5000);
-    },
-    [],
-  );
+      },
+      getInterval({ intervalType: "snackbar" }),
+    );
+  }, []);
 
   return (
     <SnackbarContext.Provider value={{ showSnackbar }}>
@@ -60,19 +65,45 @@ export const useSnackbar = () => {
 export type SnackbarProps = {
   content: ReactNode;
   severity: "info" | "error" | "warning" | "success";
+  isVisible?: boolean;
 };
 
-const Snackbar = ({ content, severity }: SnackbarProps) => (
-  <div className={styles.wrapper}>
-    <div
-      className={classNames(styles.content, {
-        [styles.success]: severity === "success",
-        [styles.info]: severity === "info",
-        [styles.warning]: severity === "warning",
-        [styles.error]: severity === "error",
-      })}
+const Snackbar = ({ content, severity, isVisible }: SnackbarProps) => {
+  const ref = useRef(null);
+
+  const viewportType = useViewport();
+
+  return (
+    <CSSTransition
+      nodeRef={ref}
+      in={isVisible}
+      timeout={300}
+      className={styles.transitionWrapper}
+      unmountOnExit
+      classNames={{
+        enter: styles.enter,
+        enterActive: styles.enterActive,
+        exit: styles.exit,
+        exitActive: styles.exitActive,
+      }}
     >
-      {content}
-    </div>
-  </div>
-);
+      <div ref={ref}>
+        <div
+          className={classNames(styles.wrapper, {
+            [styles.wide]: viewportType === "wide",
+            [styles.tall]: viewportType === "tall",
+            [styles.short]: viewportType === "short",
+          })}
+        >
+          <div
+            className={classNames(styles.content, {
+              [styles[severity]]: true,
+            })}
+          >
+            <div>{content}</div>
+          </div>
+        </div>
+      </div>
+    </CSSTransition>
+  );
+};

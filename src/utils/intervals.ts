@@ -6,6 +6,7 @@ export const intervalType = {
   shortFeedback: "shortFeedback",
   glimpseFeedback: "glimpseFeedback",
   shortPause: "shortPause",
+  snackbar: "snackbar",
 } as const;
 
 export type IntervalType = keyof typeof intervalType;
@@ -37,6 +38,8 @@ export const getInterval = ({
       return 100;
     case "glimpseFeedback":
       return 100;
+    case "snackbar":
+      return 5000;
     default:
       return 500; // Default interval
   }

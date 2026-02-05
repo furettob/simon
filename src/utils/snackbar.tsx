@@ -35,19 +35,17 @@ export const getSnackbarInfo = ({
         switch (gameMode) {
           case 1:
             return {
-              content: "Hardcore Mode: Game Over at the 1st error/timout 🔥",
+              content: <div><b>Hardcore</b>: Game Over at the 1st error 🔥</div>,
               severity: "info",
             };
           case 2:
             return {
-              content:
-                "Training Mode: Error/timout will set you back a few levels ↩️",
+              content: <div><b>Training</b>: error will set you back a few levels ↩️</div>,
               severity: "info",
             };
           case 3:
             return {
-              content:
-                "Easy Mode: repeat the sequence when you make a mistake 👍",
+              content: <div><b>Easy</b>: Simon repeats the sequence when you make a mistake 👍</div>,
               severity: "info",
             };
         }

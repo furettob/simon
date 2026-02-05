@@ -68,6 +68,7 @@ const SettingButtons = () => {
             <RubberButton
               color="red"
               onClick={() => {
+                showSnackbar(getSnackbarInfo({snackbarKey: "gameMode", gameMode: 1}))
                 dispatch(playLevelThunk());
               }}
               label="Start"
