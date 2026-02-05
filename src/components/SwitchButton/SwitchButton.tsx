@@ -3,6 +3,7 @@ import styles from "./SwitchButton.module.scss";
 type SwitchButtonProps<T> = {
   label: string;
   options: T[];
+  disabledOptionKeys?: (string | number)[];
   checkedOption: T;
   onOptionClick: ({ option }: { option: T }) => void;
   getKey?: (option: T) => string | number;
@@ -13,6 +14,7 @@ type SwitchButtonProps<T> = {
 const SwitchButton = <T,>({
   label,
   options,
+  disabledOptionKeys = [],
   checkedOption,
   onOptionClick,
   getKey = (option) => String(option),
@@ -31,7 +33,7 @@ const SwitchButton = <T,>({
             value={getKey(option)}
             checked={option === checkedOption}
             onChange={() => onOptionClick({ option })}
-            disabled={disabled}
+            disabled={disabled || disabledOptionKeys.includes(getKey(option))}
           />
         ))}
       </div>
@@ -40,7 +42,7 @@ const SwitchButton = <T,>({
           <div key={getKey(option)} className={styles.labelContainer}>
             <div
               className={styles.label}
-              onClick={() => !disabled && onOptionClick({ option })}
+              onClick={() => !disabled && !disabledOptionKeys.includes(getKey(option)) && onOptionClick({ option })}
             >
               {renderLabel(option)}
             </div>
