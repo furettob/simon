@@ -1,10 +1,12 @@
 import type { SnackbarProps } from "@/components/SnackbarProvider/SnackbarProvider";
 import { COLORS, type ColorIndex, type SimonState } from "./simonReducer";
+import { getPaceDescription, getSuccessThreshold } from "./sequence";
 
 export const snackbarInfoKeys = {
   longest: "longest",
   idleHint: "idleHiont",
   gameMode: "gameMode",
+  skillLevel: "skillLevel",
   last: "last",
   gameOver: "gameOver",
   gameOverTimeout: "gameOverTimeout",
@@ -15,11 +17,13 @@ export const getSnackbarInfo = ({
   snackbarKey,
   nextStepColor,
   gameMode,
+  skillLevel,
   sequenceLength
 }: {
   snackbarKey: keyof typeof snackbarInfoKeys;
   nextStepColor?: ColorIndex;
   gameMode?: SimonState["gameMode"];
+  skillLevel?: SimonState["skillLevel"]
   sequenceLength?: number
 }): SnackbarProps | null => {
   switch (snackbarKey) {
@@ -52,6 +56,15 @@ export const getSnackbarInfo = ({
             };
         }
       }
+      break;
+    }
+    case "skillLevel": {
+      if (skillLevel !== undefined) {
+            return {
+              content: <div><b>Skill level {skillLevel}</b> <span>{getPaceDescription({skillLevel})} game, {getSuccessThreshold({skillLevel})} steps to win!</span></div>,
+              severity: "info",
+            };
+        }
       break;
     }
     case "last":

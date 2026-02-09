@@ -37,10 +37,12 @@ const SettingButtons = () => {
     option: SimonState["skillLevel"];
   }) => {
     dispatch(setSkillLevel(option));
+    showSnackbar(getSnackbarInfo({snackbarKey: "skillLevel", skillLevel: option}));
   };
 
   // Only possible to use change settings / start a game outside of a playing game
-  const settingButtonsEnabled = ["IDLE"].includes(gameStatus);
+  const isDeviceOff = ["OFF"].includes(gameStatus);
+  const isDevicIdle = ["IDLE"].includes(gameStatus);
 
   return (
     <div className={styles.settingButtonsWrapper}>
@@ -68,7 +70,7 @@ const SettingButtons = () => {
                 dispatch(playLevelThunk(true, showSnackbar));
               }}
               label="Start"
-              disabled={!settingButtonsEnabled}
+              disabled={isDeviceOff}
             />
             <RubberButton
               color="blue"
@@ -76,7 +78,7 @@ const SettingButtons = () => {
                 dispatch(playLongestSequenceThunk());
               }}
               label="Longest"
-              disabled={!settingButtonsEnabled}
+              disabled={!isDevicIdle}
             />
           </Stack>
           <Stack justifyContent="space-between" spacing="6" flexDirection="row">
@@ -85,6 +87,7 @@ const SettingButtons = () => {
               options={["OFF", 1, 2, 3]}
               checkedOption={gameMode}
               onOptionClick={handleGameModeOptionClicked}
+              // User can always turn OFF the game, but can only switch gameMode at the beginning (when gameStatus is IDLE)
               disabledOptionKeys={gameStatus === "IDLE" ? [] : [1,2,3]}
             />
             <SwitchButton
@@ -92,7 +95,7 @@ const SettingButtons = () => {
               options={[1, 2, 3, 4]}
               checkedOption={skillLevel}
               onOptionClick={handleSkillLevelOptionClicked}
-              disabled={!settingButtonsEnabled}
+              disabled={!(isDevicIdle || isDeviceOff)}
             />
           </Stack>
         </Stack>

@@ -19,6 +19,25 @@ export const getSuccessThreshold = ({
   }
 };
 
+export const getPaceDescription = ({
+  skillLevel,
+}: {
+  skillLevel: number;
+}): string => {
+  switch (skillLevel) {
+    case 1:
+      return "Paced";
+    case 2:
+      return "Quick";
+    case 3:
+      return "Fast";
+    case 4:
+      return "Blast speed";
+    default:
+      return "Quick";
+  }
+};
+
 export const generateCompleteSequence = (sequenceLength: number): ColorIndex[] => {
   const newSequence: ColorIndex[] = [];
   for (let i = 0; i < sequenceLength; i++) {
