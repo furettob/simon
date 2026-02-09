@@ -66,17 +66,3 @@ body {
 .debugLabel {
   min-width: 24px;
 }
-
-/* COLORS */
-.bgColor--red {
-  background-color: #fc2c2c;
-}
-.bgColor--green {
-  background-color: #03cc4c;
-}
-.bgColor--blue {
-  background-color: #1c8cff;
-}
-.bgColor--yellow {
-  background-color: #fed93f;
-}

@@ -1,12 +1,12 @@
 @import "@/assets/mixins.scss";
 
 .blue {
-  --mainColor: #2d8ceb;
-  --darkColor: #134c86;
+  --mainColor: #{$color-rubber-blue};
+  --darkColor: #{$color-rubber-blue-darker};
 }
 .red {
-  --mainColor: #cd4a55;
-  --darkColor: #8f1923;
+  --mainColor: #{$color-rubber-red};
+  --darkColor: #{$color-rubber-red-darker};
 }
 
 .wrapper {
@@ -19,8 +19,8 @@
 .shell {
   border-radius: 50%;
   box-shadow:
-    inset 4px 4px 15px 0px #000000,
-    5px 5px 15px 5px rgba(0, 0, 0, 0);
+    inset 4px 4px 15px 0px $color-absolute-black,
+    5px 5px 15px 5px $color-absolute-black-transparent;
   border-radius: 50%;
   padding: 0.25em;
   background-color: var(--darkColor);
@@ -35,6 +35,10 @@
   display: block;
   background-color: var(--mainColor);
   cursor: pointer;
+
+  &:disabled {
+    cursor: not-allowed;
+  }
 }
 
 .label {
