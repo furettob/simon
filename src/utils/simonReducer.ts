@@ -7,6 +7,8 @@ import {
   LONGEST_SEQUENCE_MEMORY_KEY,
   getLongestSequenceInMemory,
 } from "./sequence";
+import type { SnackbarProps } from "@/components/SnackbarProvider/SnackbarProvider";
+import { getSnackbarInfo } from "./snackbar";
 
 // ==================== TYPES ====================
 export type AppDispatch = ThunkDispatch<SimonState, undefined, UnknownAction>;
@@ -19,12 +21,13 @@ export const GAME_STATUS = {
 } as const;
 
 export const COLORS = ["red", "blue", "yellow", "green"] as const;
+export type ColorIndex = 0 | 1 | 2 | 3
 
 // ==================== ACTION TYPES ====================
 const SET_STATUS = "SET_STATUS";
 const ADD_PLATER_INPUT_TO_SEQUENCE = "ADD_PLATER_INPUT_TO_SEQUENCE";
 const CHECK_INPUT = "CHECK_INPUT";
-const INCREASE_SEQUENCE_LENGTH = "INCREASE_SEQUENCE_LENGTH";
+const SET_SEQUENCE_LENGTH = "SET_SEQUENCE_LENGTH";
 const RESET_GAME = "RESET_GAME";
 const SET_ACTIVE_BUTTON = "SET_ACTIVE_BUTTON";
 const SET_SKILL_LEVEL = "SET_SKILL_LEVEL";
@@ -79,7 +82,7 @@ export const playSequenceThunk =
     skillLevel: number;
     sequenceLength: number;
   }) =>
-  async (dispatch: AppDispatch) => {
+  async (dispatch: AppDispatch, getState: () => SimonState) => {
     // Show the sequence
     await sleep(
       getInterval({
@@ -89,6 +92,9 @@ export const playSequenceThunk =
     ); // Initial delay
 
     for (let i = 0; i < sequenceLength; i++) {
+      if (getState().gameMode === "OFF") {
+        return
+      }
       await dispatch(
         ligtAndSoundFeedbackThunk({
           colorIndex: completeSequence[i],
@@ -106,9 +112,9 @@ export const playSequenceThunk =
   };
 
 export const waitThunk =
-  () => async (dispatch: AppDispatch, getState: () => SimonState) => {
+  (showSnackbar: (snackbarInfo: SnackbarProps | null) => void) => async (dispatch: AppDispatch, getState: () => SimonState) => {
     dispatch(setStatus(GAME_STATUS.WAITING));
-    const { sequenceLength, playerSequence, timeoutRef, skillLevel } =
+    const { sequenceLength, playerSequence, timeoutRef, skillLevel} =
       getState();
 
     clearTimeout(timeoutRef);
@@ -118,15 +124,19 @@ export const waitThunk =
         const {
           playerSequence: newPlayerSequence,
           sequenceLength: newGameSequenceLength,
+          gameMode: currentGameMode,
         } = getState();
 
+        if (currentGameMode === "OFF") {
+          return
+        }
         if (
           // Player did not submit an input in the last 5s
           newPlayerSequence.length <= playerSequence.length &&
           // Player did not advance level
           newGameSequenceLength === sequenceLength
         ) {
-          dispatch(gameOverThunk(null));
+          dispatch(errorThunk(null, showSnackbar));
         }
       },
       getInterval({ intervalType: intervalType.gameOverTimeout, skillLevel }),
@@ -134,9 +144,37 @@ export const waitThunk =
 
     dispatch({ type: SET_TIMEOUT_REF, payload: gameOverTimeout });
   };
-export const gameOverThunk =
-  (colorIndex: number | null) => async (dispatch: AppDispatch) => {
+
+export const repeatingOnErrorThunk =
+  (showSnackbar: (snackbarInfo: SnackbarProps | null) => void) =>
+  async (dispatch: AppDispatch, getState: () => SimonState) => {
+    const { gameMode, sequenceLength: oldSequenceLength } = getState();
+    if (gameMode === "OFF") {
+      return
+    } 
+
+    if (gameMode === 2) {
+      const newSequenceLength = Math.max(
+        oldSequenceLength - (oldSequenceLength % 3),
+        1,
+      );
+      dispatch(setSequenceLength(newSequenceLength));
+    }
+    const { sequenceLength } = getState();
+    showSnackbar(getSnackbarInfo({ snackbarKey: "repeat", sequenceLength }));
+    dispatch({ type: SET_STATUS, payload: GAME_STATUS.WAITING });
+    dispatch(playLevelThunk(false, showSnackbar));
+  };
+
+export const errorThunk =
+  (colorIndex: number | null, showSnackbar: (snackbarInfo: SnackbarProps | null) => void) =>
+  async (dispatch: AppDispatch, getState: () => SimonState) => {
     // TODO: what the real game do when timeout? In terms of user feedback?
+    const { gameMode } = getState();
+    if (gameMode === "OFF") {
+      return
+    }
+
     dispatch({ type: SET_STATUS, payload: GAME_STATUS.SHOWING });
     for (let i = 0; i < 3; i++) {
       await dispatch(
@@ -147,8 +185,18 @@ export const gameOverThunk =
         }),
       );
     }
-    dispatch(resetGame());
-    dispatch({ type: SET_STATUS, payload: GAME_STATUS.IDLE });
+
+    switch (gameMode) {
+      case 1: {
+        dispatch(resetGame());
+        dispatch({ type: SET_STATUS, payload: GAME_STATUS.IDLE });
+        break;
+      }
+      case 2:
+      case 3: {
+        dispatch(repeatingOnErrorThunk(showSnackbar))
+      }
+    }
   };
 
 export const successThunk = () => async (dispatch: AppDispatch) => {
@@ -177,7 +225,7 @@ export const successThunk = () => async (dispatch: AppDispatch) => {
 };
 
 export const playLevelThunk =
-  (addLevel: boolean = true) =>
+  (addLevel: boolean = true, showSnackbar: (snackbarInfo: SnackbarProps | null) => void) =>
   async (dispatch: AppDispatch, getState: () => SimonState) => {
     const { gameStatus, skillLevel, timeoutRef } = getState();
     if (timeoutRef) {
@@ -197,7 +245,7 @@ export const playLevelThunk =
 
     // Set up the game with first/new color
     if (addLevel) {
-      dispatch(increaseSequenceLength());
+      dispatch(setSequenceLength());
     }
     // Get the updated state with the new sequence
     const { completeSequence, sequenceLength } = getState();
@@ -206,7 +254,7 @@ export const playLevelThunk =
       playSequenceThunk({ completeSequence, skillLevel, sequenceLength }),
     );
 
-    dispatch(waitThunk()); // After showing sequence, set status to waiting
+    dispatch(waitThunk(showSnackbar)); // After showing sequence, set status to waiting
   };
 
 export const playLongestSequenceThunk =
@@ -226,7 +274,6 @@ export const playLongestSequenceThunk =
       }),
     );
 
-    console.log("Repeating::: ", longestSequenceInMemory);
     await dispatch(
       playSequenceThunk({
         completeSequence: longestSequenceInMemory,
@@ -239,25 +286,29 @@ export const playLongestSequenceThunk =
   };
 
 export const handleClickColorButtonThunk =
-  (colorIndex: number) =>
+  (
+    colorIndex: ColorIndex,
+    showSnackbar: (snackbarInfo: SnackbarProps | null) => void,
+  ) =>
   async (dispatch: AppDispatch, getState: () => SimonState) => {
     // Record player input
     const {
       completeSequence,
       playerSequence: previousPlayerSequence,
       sequenceLength,
+      gameMode,
     } = getState();
-    if (previousPlayerSequence.length >= sequenceLength) {
+    if (previousPlayerSequence.length >= sequenceLength || gameMode === "OFF") {
       return;
     }
     dispatch(addPlayerInputToSequence(colorIndex));
-    const { playerSequence, skillLevel, longestSequence } = getState();
+    const { playerSequence, skillLevel, longestSequence } =
+      getState();
 
     // Check the input
     const currentIndex = playerSequence.length - 1;
     if (playerSequence[currentIndex] !== completeSequence[currentIndex]) {
-      // TODO: introduce strictMode AKA gameMode
-      dispatch(gameOverThunk(colorIndex));
+      dispatch(errorThunk(colorIndex, showSnackbar));
       return;
     }
 
@@ -304,10 +355,10 @@ export const handleClickColorButtonThunk =
         );
         dispatch(successThunk());
       } else {
-        dispatch(playLevelThunk());
+        dispatch(playLevelThunk(true, showSnackbar));
       }
     } else {
-      dispatch(waitThunk());
+      dispatch(waitThunk(showSnackbar));
     }
   };
 
@@ -316,13 +367,14 @@ export const setStatus = (status: SimonState["gameStatus"]) => ({
   type: SET_STATUS,
   payload: status,
 });
-export const addPlayerInputToSequence = (colorIndex: number) => ({
+export const addPlayerInputToSequence = (colorIndex: ColorIndex) => ({
   type: ADD_PLATER_INPUT_TO_SEQUENCE,
   payload: colorIndex,
 });
 export const checkInput = () => ({ type: CHECK_INPUT });
-export const increaseSequenceLength = () => ({
-  type: INCREASE_SEQUENCE_LENGTH,
+export const setSequenceLength = (newSequenceLength?: number) => ({
+  type: SET_SEQUENCE_LENGTH,
+  payload: newSequenceLength,
 });
 export const resetGame = () => ({ type: RESET_GAME });
 export const setActiveButton = (colorIndex: number | null) => ({
@@ -341,12 +393,12 @@ export const setGameMode = (newGameMode: SimonState["gameMode"]) => ({
 // ==================== INITIAL STATE ====================
 export type SimonState = {
   gameStatus: keyof typeof GAME_STATUS;
-  completeSequence: number[];
+  completeSequence: ColorIndex[];
   sequenceLength: number;
-  playerSequence: number[];
-  longestSequence: number[];
+  playerSequence: ColorIndex[];
+  longestSequence: ColorIndex[];
   skillLevel: 1 | 2 | 3 | 4;
-  gameMode: 1 | 2 | 3;
+  gameMode: "OFF" | 1 | 2 | 3;
   activeButton: number | null;
   timeoutRef: number | undefined;
   activeButtonTimeoutRef: number | undefined;
@@ -355,21 +407,20 @@ export type SimonState = {
 // ==================== ACTION TYPES ====================
 type SimonAction =
   | { type: typeof SET_STATUS; payload: SimonState["gameStatus"] }
-  | { type: typeof ADD_PLATER_INPUT_TO_SEQUENCE; payload: number }
+  | { type: typeof ADD_PLATER_INPUT_TO_SEQUENCE; payload: ColorIndex }
   | { type: typeof CHECK_INPUT }
-  | { type: typeof INCREASE_SEQUENCE_LENGTH }
+  | { type: typeof SET_SEQUENCE_LENGTH; payload?: number }
   | { type: typeof RESET_GAME }
   | { type: typeof SET_ACTIVE_BUTTON; payload: number | null }
   | { type: typeof SET_SKILL_LEVEL; payload: SimonState["skillLevel"] }
   | { type: typeof SET_GAME_MODE; payload: SimonState["gameMode"] }
   | {
-    type: typeof SET_LONGEST_SEQUENCE;
-    payload: SimonState["longestSequence"];
-  }
-  | { type: typeof SET_ACTIVE_BUTTON_TIMEOUT_REF; payload: number}
-  | { type: typeof SET_TIMEOUT_REF; payload: number }
+      type: typeof SET_LONGEST_SEQUENCE;
+      payload: SimonState["longestSequence"];
+    }
+  | { type: typeof SET_ACTIVE_BUTTON_TIMEOUT_REF; payload: number }
+  | { type: typeof SET_TIMEOUT_REF; payload: number };
 
-  
 export const initialState: SimonState = {
   gameStatus: "IDLE",
   completeSequence: [],
@@ -417,7 +468,7 @@ export const simonReducer = (
       };
     }
 
-    case INCREASE_SEQUENCE_LENGTH: {
+    case SET_SEQUENCE_LENGTH: {
       const completeSequence =
         state.completeSequence.length === 0
           ? generateCompleteSequence(
@@ -428,7 +479,10 @@ export const simonReducer = (
         ...state,
         gameStatus: GAME_STATUS.SHOWING,
         completeSequence,
-        sequenceLength: state.sequenceLength + 1,
+        sequenceLength:
+          action.payload === undefined
+            ? state.sequenceLength + 1
+            : action.payload,
         playerSequence: [],
       };
     }

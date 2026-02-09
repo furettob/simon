@@ -25,12 +25,8 @@ const SettingButtons = () => {
   const handleGameModeOptionClicked = ({
     option,
   }: {
-    option: SimonState["gameMode"] | "OFF";
+    option: SimonState["gameMode"];
   }) => {
-    if (option === "OFF") {
-      showSnackbar(getSnackbarInfo({snackbarKey:"off"}));
-      return;
-    }
     dispatch(setGameMode(option));
     showSnackbar(getSnackbarInfo({snackbarKey: "gameMode", gameMode: option}));
   };
@@ -61,15 +57,15 @@ const SettingButtons = () => {
           <Stack justifyContent="space-around" spacing="6" flexDirection="row">
             <RubberButton
               color="blue"
-              onClick={() => dispatch(playLevelThunk(false))}
+              onClick={() => dispatch(playLevelThunk(false, showSnackbar))}
               label="Last"
               disabled={gameStatus !== "WAITING" || playerSequence.length > 0}
             />
             <RubberButton
               color="red"
               onClick={() => {
-                showSnackbar(getSnackbarInfo({snackbarKey: "gameMode", gameMode: 1}))
-                dispatch(playLevelThunk());
+                showSnackbar(null)
+                dispatch(playLevelThunk(true, showSnackbar));
               }}
               label="Start"
               disabled={!settingButtonsEnabled}
@@ -89,7 +85,7 @@ const SettingButtons = () => {
               options={["OFF", 1, 2, 3]}
               checkedOption={gameMode}
               onOptionClick={handleGameModeOptionClicked}
-              disabled={!settingButtonsEnabled}
+              disabledOptionKeys={gameStatus === "IDLE" ? [] : [1,2,3]}
             />
             <SwitchButton
               label="skill level"

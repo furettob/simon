@@ -1,3 +1,5 @@
+import type { ColorIndex } from "./simonReducer";
+
 export const getSuccessThreshold = ({
   skillLevel,
 }: {
@@ -17,11 +19,11 @@ export const getSuccessThreshold = ({
   }
 };
 
-export const generateCompleteSequence = (sequenceLength: number): number[] => {
-  const newSequence = [];
+export const generateCompleteSequence = (sequenceLength: number): ColorIndex[] => {
+  const newSequence: ColorIndex[] = [];
   for (let i = 0; i < sequenceLength; i++) {
-    newSequence.push(Math.floor(Math.random() * 4));
-  }
+    newSequence.push(Math.floor(Math.random() * 4) as ColorIndex)
+  } 
   return newSequence;
 };
 

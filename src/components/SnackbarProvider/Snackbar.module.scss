@@ -3,7 +3,9 @@
   justify-content: center;
 }
 .wrapper {
-  width: 560px;
+  max-width: 560px;
+  width: 100%;
+  padding: 1em;
   overflow: hidden;
   position: relative;
 
@@ -18,13 +20,13 @@
 
   &.short {
     position: fixed;
-    height: 150px;
+    height: 120px;
     bottom: 0;
   }
 }
 
 .content {
-  padding: 2em;
+  padding: 1em 2em;
   border-radius: 0.5em;
   color: #fff;
   position: relative;
@@ -33,36 +35,59 @@
   transform: translate(-50%, -50%);
   top: 50%;
   left: 50%;
+  border: 2px solid;
+
+  @media screen and (max-width: 420px) {
+    font-size: 1.5em;
+  }
+
+  & > div {
+    display: flex;
+    gap: 8px;
+    flex-direction: column;
+  }
 
   &.success {
-    background-color: #03cc4c;
+    background-color: #ade0bf;
+    border-color: #025a22;
+    color: #025a22;
   }
   &.info {
-    background-color: #1c8cff;
+    background-color: #abcae9;
+    border-color: #083f76;
+    color: #083f76;
   }
   &.warning {
-    background-color: #fed93f;
+    background-color: #eddfaa;
+    border-color: #86720a;
+    color: #86720a;
   }
   &.error {
-    background-color: #fc2c2c;
+    background-color: #f6c7c7;
+    border-color: #991818;
+    color: #991818;
   }
 
   .enter & {
     top: -100%;
     opacity: 0.8;
+    border: 0;
   }
   .enterActive & {
     top: 50%;
     opacity: 1;
+    border: 1px solid;
     transition: all 400ms ease-out;
   }
   .exit & {
     top: 50%;
-    opacity: 0.8;
+    border: 1px solid;
+    opacity: 1;
   }
   .exitActive & {
     top: -100%;
     opacity: 0;
+    border: 0;
     transition: all 400ms ease-out;
   }
 }

@@ -100,7 +100,7 @@ const Snackbar = ({ content, severity, isVisible }: SnackbarProps) => {
               [styles[severity]]: true,
             })}
           >
-            <div>{content}</div>
+            {content}
           </div>
         </div>
       </div>

@@ -5,21 +5,23 @@ import {
   GAME_STATUS,
   handleClickColorButtonThunk,
 } from "@/utils/simonReducer";
-import type { SimonState, AppDispatch } from "@/utils/simonReducer";
+import type { SimonState, AppDispatch, ColorIndex } from "@/utils/simonReducer";
 import classNames from "classnames";
-import TopSticker from "../TopSticker/TopSticker";
+import TopSticker from "@/components/TopSticker/TopSticker";
+import { useSnackbar } from "@/components/SnackbarProvider/SnackbarProvider";
 
 const ColorButtons = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const {showSnackbar} = useSnackbar()
 
   // Use selectors to get state
   const { gameStatus, activeButton } = useSelector(
     (state: SimonState) => state,
   );
 
-  const handleButtonClick = (colorIndex: number) => {
+  const handleButtonClick = (colorIndex: ColorIndex) => {
     if (gameStatus !== GAME_STATUS.WAITING) return;
-    dispatch(handleClickColorButtonThunk(colorIndex));
+    dispatch(handleClickColorButtonThunk(colorIndex, showSnackbar));
   };
 
   return (
@@ -37,7 +39,7 @@ const ColorButtons = () => {
               },
             )}
             key={color}
-            onClick={() => handleButtonClick(COLORS.indexOf(color))}
+            onClick={() => handleButtonClick(COLORS.indexOf(color) as ColorIndex)}
           >
             <div className={styles.ligtherBackground} />
             <div className={classNames(styles.light, styles.light1)} />

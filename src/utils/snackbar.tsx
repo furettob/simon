@@ -1,33 +1,30 @@
 import type { SnackbarProps } from "@/components/SnackbarProvider/SnackbarProvider";
-import type { SimonState } from "./simonReducer";
+import { COLORS, type ColorIndex, type SimonState } from "./simonReducer";
 
 export const snackbarInfoKeys = {
-  off: "off",
   longest: "longest",
   idleHint: "idleHiont",
   gameMode: "gameMode",
   last: "last",
   gameOver: "gameOver",
-  gameOverTimeout: "gameOverTimeout"
+  gameOverTimeout: "gameOverTimeout",
+  repeat: "repeat"
 };
 
 export const getSnackbarInfo = ({
   snackbarKey,
   nextStepColor,
   gameMode,
+  sequenceLength
 }: {
   snackbarKey: keyof typeof snackbarInfoKeys;
-  nextStepColor?: 1 | 2 | 3 | 4;
+  nextStepColor?: ColorIndex;
   gameMode?: SimonState["gameMode"];
+  sequenceLength?: number
 }): SnackbarProps | null => {
   switch (snackbarKey) {
-    case "off":
-      return {
-        content: "No need to turn the game off, it has no real batteries 🔋",
-        severity: "info",
-      };
     case "longest":
-      return { content: "Playing your record sequence!", severity: "info" };
+      return { content: "Playing your record sequence!", severity: "success" };
     case "idleHint":
       return { content: "Press Start", severity: "info" };
     case "gameMode": {
@@ -35,17 +32,22 @@ export const getSnackbarInfo = ({
         switch (gameMode) {
           case 1:
             return {
-              content: <div><b>Hardcore</b>: Game Over at the 1st error 🔥</div>,
+              content: <div><b>Hardcore</b> <span>Game Over at the 1st error 🔥</span></div>,
               severity: "info",
             };
           case 2:
             return {
-              content: <div><b>Training</b>: error will set you back a few levels ↩️</div>,
+              content: <div><b>Training</b> <span>Error will set you back a few levels ↩️</span></div>,
               severity: "info",
             };
           case 3:
             return {
-              content: <div><b>Easy</b>: Simon repeats the sequence when you make a mistake 👍</div>,
+              content: <div><b>Easy</b> <span>Simon repeats the sequence when you make a mistake 👍</span></div>,
+              severity: "info",
+            };
+          case "OFF":
+            return {
+              content: <div><b>Bye bye</b> <span>Switching off </span></div>,
               severity: "info",
             };
         }
@@ -57,7 +59,7 @@ export const getSnackbarInfo = ({
     case "gameOver": {
       if (nextStepColor) {
         return {
-          content: `Game Over, correct step was ${nextStepColor}`,
+          content: <div><b>Game Over</b> <span>Correct color was {COLORS[nextStepColor]}</span></div>,
           severity: "error",
         };
       }
@@ -66,8 +68,17 @@ export const getSnackbarInfo = ({
     case "gameOverTimeout": {
       if (nextStepColor) {
         return {
-          content: `Timeout! Correct step was ${nextStepColor}`,
+          content:  <div><b>Timeout!</b><span>Correct step was {nextStepColor}</span></div>,
           severity: "error",
+        };
+      }
+      break;
+    }
+    case "repeat": {
+      if (sequenceLength) {
+        return {
+          content:  <span><b>Repeat</b> sequence until step {sequenceLength}</span>,
+          severity: "warning",
         };
       }
       break;

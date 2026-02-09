@@ -39,7 +39,7 @@ export const getInterval = ({
     case "glimpseFeedback":
       return 100;
     case "snackbar":
-      return 5000;
+      return 4000;
     default:
       return 500; // Default interval
   }
