@@ -34,6 +34,7 @@ export const SKILL_LEVEL = {
 } as const;
 
 export const COLORS = ["red", "blue", "yellow", "green"] as const;
+export const COLORS_EMOJI = ["🔴", "🟢", "🟡", "🔵"] as const;
 export type ColorIndex = 0 | 1 | 2 | 3;
 
 // ==================== ACTION TYPES ====================
@@ -226,7 +227,7 @@ export const errorThunk =
   ) =>
   async (dispatch: AppDispatch, getState: () => SimonState) => {
     // TODO: what the real game do when timeout? In terms of user feedback?
-    const { gameMode } = getState();
+    const { gameMode, playerSequence, completeSequence} = getState();
     if (gameMode === GAME_MODE.OFF) {
       return;
     }
@@ -245,6 +246,7 @@ export const errorThunk =
     switch (gameMode) {
       case 1: {
         dispatch(resetGame());
+        showSnackbar(getSnackbarInfo({snackbarKey: "gameOver", nextStepColor: completeSequence[playerSequence.length]}))
         dispatch(setStatus(GAME_STATUS.IDLE));
         break;
       }

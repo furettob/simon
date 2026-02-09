@@ -1,5 +1,5 @@
 import type { SnackbarProps } from "@/components/SnackbarProvider/SnackbarProvider";
-import { COLORS, type ColorIndex, type SimonState } from "./simonReducer";
+import { COLORS, COLORS_EMOJI, type ColorIndex, type SimonState } from "./simonReducer";
 import { getPaceDescription, getSuccessThreshold } from "./sequence";
 
 export const snackbarInfoKeys = {
@@ -51,7 +51,7 @@ export const getSnackbarInfo = ({
             };
           case "OFF":
             return {
-              content: <div><b>Bye bye</b> <span>Switching off </span></div>,
+              content: <div><b>Bye bye</b> <span>Switching off 👋</span></div>,
               severity: "info",
             };
         }
@@ -61,7 +61,7 @@ export const getSnackbarInfo = ({
     case "skillLevel": {
       if (skillLevel !== undefined) {
             return {
-              content: <div><b>Skill level {skillLevel}</b> <span>{getPaceDescription({skillLevel})} game, {getSuccessThreshold({skillLevel})} steps to win!</span></div>,
+              content: <div><b>Skill level {skillLevel}</b> <span>{getPaceDescription({skillLevel})} game, {getSuccessThreshold({skillLevel})} steps to win! 🌟</span></div>,
               severity: "info",
             };
         }
@@ -72,7 +72,7 @@ export const getSnackbarInfo = ({
     case "gameOver": {
       if (nextStepColor) {
         return {
-          content: <div><b>Game Over</b> <span>Correct color was {COLORS[nextStepColor]}</span></div>,
+          content: <div><b>Game Over</b> <span>Correct color was {COLORS_EMOJI[nextStepColor]}</span></div>,
           severity: "error",
         };
       }
@@ -81,7 +81,7 @@ export const getSnackbarInfo = ({
     case "gameOverTimeout": {
       if (nextStepColor) {
         return {
-          content:  <div><b>Timeout!</b><span>Correct step was {nextStepColor}</span></div>,
+          content: <div><b>Timeout!</b> <span>Correct color was {COLORS_EMOJI[nextStepColor]}</span></div>,
           severity: "error",
         };
       }
