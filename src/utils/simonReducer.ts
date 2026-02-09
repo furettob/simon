@@ -227,7 +227,7 @@ export const errorThunk =
   ) =>
   async (dispatch: AppDispatch, getState: () => SimonState) => {
     // TODO: what the real game do when timeout? In terms of user feedback?
-    const { gameMode, playerSequence, completeSequence} = getState();
+    const { gameMode, playerSequence, completeSequence } = getState();
     if (gameMode === GAME_MODE.OFF) {
       return;
     }
@@ -246,7 +246,12 @@ export const errorThunk =
     switch (gameMode) {
       case 1: {
         dispatch(resetGame());
-        showSnackbar(getSnackbarInfo({snackbarKey: "gameOver", nextStepColor: completeSequence[playerSequence.length]}))
+        showSnackbar(
+          getSnackbarInfo({
+            snackbarKey: "gameOver",
+            nextStepColor: completeSequence[playerSequence.length],
+          }),
+        );
         dispatch(setStatus(GAME_STATUS.IDLE));
         break;
       }
@@ -359,7 +364,10 @@ export const handleClickColorButtonThunk =
       sequenceLength,
       gameMode,
     } = getState();
-    if (previousPlayerSequence.length >= sequenceLength || gameMode === GAME_MODE.OFF) {
+    if (
+      previousPlayerSequence.length >= sequenceLength ||
+      gameMode === GAME_MODE.OFF
+    ) {
       return;
     }
     dispatch(addPlayerInputToSequence(colorIndex));
@@ -531,11 +539,22 @@ export const simonReducer = (
         skillLevel: action.payload,
       };
 
-    case SET_GAME_MODE:
+    case SET_GAME_MODE: {
+      const { skillLevel, gameMode } = state;
+      const additionalProp =
+        action.payload === "OFF"
+          ? {
+              ...initialState,
+              skillLevel,
+              gameMode,
+            }
+          : {};
       return {
         ...state,
+        ...additionalProp,
         gameMode: action.payload,
       };
+    }
 
     case SET_TIMEOUT_REF:
       return {
