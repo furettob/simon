@@ -49,9 +49,36 @@ background: -webkit-linear-gradient(
 }
 
 // COLORS
+// device
 $color-rubber-blue: #2d8ceb;
-$color-rubber-blue-darker:#134c86;
+$color-rubber-blue-dark:#134c86;
 $color-rubber-red: #cd4a55;
 $color-rubber-red-darker: #8f1923;
 $color-absolute-black: #000000;
-$color-absolute-black-transparent: rgba(0, 0, 0, 0)
+$color-absolute-black-alpha:  rgba(0, 0, 0, .7);
+$color-absolute-black-transparent: rgba(0, 0, 0, 0);
+$color-black-device: #242424;
+$color-grey: #666;
+$color-light-grey: #aaa;
+$color-white: #fff;
+$color-white-alpha: rgba(255, 255, 255, 0.3);
+$color-logo-first-letter: #f00c11;
+$color-logo-second-letter: #037aff;
+// buttons
+$color-button-red: #fc2c2c;
+$color-button-red-light: #f6c7c7;
+$color-button-blue: #1c8cff;
+$color-button-blue-light: #abc1e9;
+$color-button-yellow: #fed93f;
+$color-button-yellow-light: #ffee99;
+$color-button-green: #03cc4c;
+$color-button-green-light: #ade0b4;
+// snackbars
+$color-snackbar-success-light: $color-button-green-light;
+$color-snackbar-success-dark: #025a22;
+$color-snackbar-info-light: $color-button-blue-light;
+$color-snackbar-info-dark: $color-rubber-blue-dark;
+$color-snackbar-warning-light: $color-button-yellow-light;
+$color-snackbar-warning-dark: #86720a;
+$color-snackbar-error-light: $color-button-red-light;
+$color-snackbar-error-dark: #991818;

@@ -8,8 +8,8 @@ const TopSticker = () => {
           <div className={styles.content}>
             <div className={styles.logoWrapper}>
               <div className={styles.logoContent}>
-                <span className={classNames(styles.logo, styles.logoF)}>F</span>
-                <span className={classNames(styles.logo, styles.logoB)}>B</span>
+                <span className={classNames(styles.logo, styles.firstLetter)}>F</span>
+                <span className={classNames(styles.logo, styles.secondLetter)}>B</span>
                 <span className={styles.logoRegisteredSymbol}>Ⓡ</span>
               </div>
               <div className={styles.logoText}>FurettoB</div>

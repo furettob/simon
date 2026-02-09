@@ -1,3 +1,5 @@
+@import "@/assets/mixins.scss";
+
 .colorButtonsWrapper {
   position: relative;
   width: 100%;
@@ -15,23 +17,18 @@
 }
 
 /* BUTTON COLORS */
+$colorSettings: (
+  red: (main: $color-button-red, light: $color-button-red-light),
+  blue: (main: $color-button-blue, light: $color-button-blue-light),
+  yellow: (main: $color-button-yellow, light: $color-button-yellow-light),
+  green: (main: $color-button-green, light: $color-button-green-light)
+);
 
-/* SINGLE BUTTON UI */
-.colorButton--red {
-  --mainColor: #fc2c2c;
-  --lightColor: #ff7777;
-}
-.colorButton--blue {
-  --mainColor: #1c8cff;
-  --lightColor: #77aaff;
-}
-.colorButton--yellow {
-  --mainColor: #fed93f;
-  --lightColor: #ffee99;
-}
-.colorButton--green {
-  --mainColor: #03cc4c;
-  --lightColor: #77ff77;
+@each $color, $values in $colorSettings {
+  .colorButton--#{$color} {
+    --mainColor: #{map-get($values, main)};
+    --lightColor: #{map-get($values, light)};
+  }
 }
 
 .colorButton {
@@ -56,7 +53,7 @@
   }
 
   &.colorLightUp .offColor {
-    opacity: 0;
+    opacity: .15;
     transition: opacity 0.05s;
   }
 }

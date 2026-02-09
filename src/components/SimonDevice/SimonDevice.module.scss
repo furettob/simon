@@ -1,3 +1,5 @@
+@import "@/assets/mixins.scss";
+
 .simonDeviceWrapper {
   width: 100%;
   max-width: 560px;
@@ -6,13 +8,13 @@
     z-index: 2;
     position: relative;
     border-radius: 50%;
-    background-color: #242424;
+    background-color: $color-black-device;
     padding: 6%;
   }
 
   & .bottomShell {
     border-radius: 100% / 8%;
-    background-color: #242424;
+    background-color: $color-black-device;
     width: 64%;
     aspect-ratio: 1/1.2;
     margin: auto;

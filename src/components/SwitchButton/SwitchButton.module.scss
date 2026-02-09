@@ -10,10 +10,10 @@
 .shell {
   border-radius: 2px;
   box-shadow:
-    inset 4px 4px 4px 0px rgba(34, 34, 34, 1),
-    5px 5px 15px 5px rgba(34, 34, 34, 0);
+    inset 4px 4px 4px 0px $color-absolute-black-alpha,
+    5px 5px 15px 5px $color-absolute-black-transparent;
   padding: 0;
-  background-color: #aaa;
+  background-color: $color-light-grey;
   display: flex;
 
   & input {
@@ -27,18 +27,19 @@
     background: rgba(0, 0, 0, 0.4);
     cursor: pointer;
     &:hover {
-      background: rgba(200, 200, 200, 0.4);
+      background: $color-white-alpha;
     }
 
-    &:checked, &:checked:hover {
+    &:checked,
+    &:checked:hover {
       background: repeating-linear-gradient(
         90deg,
-        #242424,
-        #242424 0.3em,
-        #666 0.3em,
-        #666 0.35em
+        $color-black-device,
+        $color-black-device 0.3em,
+        $color-grey 0.3em,
+        $color-grey 0.35em
       );
-      outline: 0.1em solid #666;
+      outline: 0.1em solid $color-grey;
       cursor: auto;
     }
   }

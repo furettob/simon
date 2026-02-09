@@ -10,7 +10,7 @@ const SimonGame = () => (
       <Stack
         alignItems="center"
         justifyContent="center"
-        className={styles.simonAppContainer}
+        className={styles.container}
       >
         <SimonDevice />
       </Stack>

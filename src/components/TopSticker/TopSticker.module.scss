@@ -7,7 +7,7 @@
   left: 50%;
   transform: translate(-50%, -50%);
   border-radius: 50%;
-  background-color: #242424;
+  background-color: $color-black-device;
   padding: 4%;
 }
 
@@ -22,7 +22,7 @@
   padding-top: 100%;
   box-sizing: border-box;
   border-radius: 50%;
-  border: 0.125em solid #242424;
+  border: 0.125em solid $color-black-device;
   text-align: center;
 }
 
@@ -42,11 +42,11 @@
   font-weight: bold;
   font-size: 5em;
   line-height: 1;
-  &.logoF {
-    color: #f00c11;
+  &.firstLetter {
+    color: $color-logo-first-letter;
   }
-  &.logoB {
-    color: #037aff;
+  &.secondLetter {
+    color: $color-logo-second-letter;
   }
 }
 

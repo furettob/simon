@@ -1,7 +1,6 @@
 import { useSelector, useDispatch } from "react-redux";
 import styles from "./SettingButtons.module.scss";
 import {
-  GAME_MODE,
   GAME_STATUS,
   playLevelThunk,
   playLongestSequenceThunk,

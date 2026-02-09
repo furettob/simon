@@ -10,7 +10,7 @@
 }
 
 .settingButtonsBorder {
-  border: 0.5em #242424 solid;
+  border: 0.5em $color-black-device solid;
   border-radius: 1em;
   flex-grow: 1;
   flex-wrap: wrap;
@@ -18,7 +18,7 @@
 
 .blackBorder {
   margin: -0.5em;
-  border: 0.5em #242424 solid;
+  border: 0.5em $color-black-device solid;
   border-radius: 1em;
 
   &.settingButtons {
