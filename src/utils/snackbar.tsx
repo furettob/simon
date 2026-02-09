@@ -1,5 +1,5 @@
 import type { SnackbarProps } from "@/components/SnackbarProvider/SnackbarProvider";
-import { COLORS, COLORS_EMOJI, type ColorIndex, type SimonState } from "./simonReducer";
+import { COLORS_EMOJI, type ColorIndex, type SimonState } from "./simonReducer";
 import { getPaceDescription, getSuccessThreshold } from "./sequence";
 
 export const snackbarInfoKeys = {

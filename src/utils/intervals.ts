@@ -9,9 +9,9 @@ export const intervalType = {
   snackbar: "snackbar",
 } as const;
 
-export type IntervalType = keyof typeof intervalType;
+type IntervalType = keyof typeof intervalType;
 
-const buttonFeedbackIntervals = [800, 400, 400, 250]; // Speed up sound decay based on skill level
+const buttonFeedbackIntervals = [600, 400, 400, 250]; // Speed up sound decay based on skill level
 const betweenStepsIntervals = [250, 150, 150, 100]; // Speed up sound decay based on skill level
 const gameOverTimeoutIntervals = [4000, 3000, 2500, 2000]; // Speed up sound decay based on skill level
 

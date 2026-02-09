@@ -46,7 +46,7 @@ export const generateCompleteSequence = (sequenceLength: number): ColorIndex[] =
   return newSequence;
 };
 
-export const LONGEST_SEQUENCE_MEMORY_KEY = "simonLongSeq2";
+export const LONGEST_SEQUENCE_MEMORY_KEY = "simonLongSeq";
 
 export const getLongestSequenceInMemory = ({
   longestSequenceInState,

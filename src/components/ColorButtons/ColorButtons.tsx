@@ -3,12 +3,12 @@ import styles from "./ColorButtons.module.scss";
 import {
   COLORS,
   GAME_STATUS,
-  handleClickColorButtonThunk,
 } from "@/utils/simonReducer";
 import type { SimonState, AppDispatch, ColorIndex } from "@/utils/simonReducer";
 import classNames from "classnames";
 import TopSticker from "@/components/TopSticker/TopSticker";
 import { useSnackbar } from "@/components/SnackbarProvider/SnackbarProvider";
+import { handleClickColorButtonThunk } from "@/utils/thunks";
 
 const ColorButtons = () => {
   const dispatch = useDispatch<AppDispatch>();

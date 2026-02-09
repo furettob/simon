@@ -2,8 +2,6 @@ import { getInterval, intervalType } from "./intervals";
 import { playSound, type Frequence } from "./sound";
 import type { UnknownAction, ThunkDispatch } from "@reduxjs/toolkit";
 import {
-  getSuccessThreshold,
-  generateCompleteSequence,
   LONGEST_SEQUENCE_MEMORY_KEY,
   getLongestSequenceInMemory,
 } from "./sequence";
@@ -15,13 +13,13 @@ import {
   GAME_MODE,
   GAME_STATUS,
   resetGame,
+  resetPlayerSequence,
   setActiveButton,
   setActiveButtonTimeoutRef,
-  setSequenceLength,
+  setNewSequenceToBePlayed,
   setStatus,
   setTimeoutRef,
   setTLongestSequence,
-  SKILL_LEVEL,
   type ColorIndex,
   type SimonState,
 } from "./simonReducer";
@@ -73,14 +71,15 @@ export const playSequenceThunk =
     sequenceLength: number;
   }) =>
   async (dispatch: AppDispatch, getState: () => SimonState) => {
-    // Show the sequence
+    // Initial delay
     await sleep(
       getInterval({
         intervalType: intervalType.pauseBeforeNextLevel,
         skillLevel,
       }),
-    ); // Initial delay
-
+    );
+    
+    // Show the sequence
     for (let i = 0; i < sequenceLength; i++) {
       if (getState().gameMode === GAME_MODE.OFF) {
         return;
@@ -149,10 +148,11 @@ export const repeatingOnErrorThunk =
         oldSequenceLength - (oldSequenceLength % 3),
         1,
       );
-      dispatch(setSequenceLength(newSequenceLength));
+      dispatch(setNewSequenceToBePlayed(newSequenceLength));
     }
     const { sequenceLength } = getState();
     showSnackbar(getSnackbarInfo({ snackbarKey: "repeat", sequenceLength }));
+    // playLevelThunk will not play if the gameStatus is already on "showing"
     dispatch(setStatus(GAME_STATUS.WAITING));
     dispatch(playLevelThunk(false, showSnackbar));
   };
@@ -242,11 +242,13 @@ export const playLevelThunk =
 
     // Set up the game with first/new color
     if (addLevel) {
-      dispatch(setSequenceLength());
+      dispatch(setNewSequenceToBePlayed());
     }
     // Get the updated state with the new sequence
     const { completeSequence, sequenceLength } = getState();
 
+    // TODO: move resetPlayerSequence in waitThunk + use a guard to only call it the first time
+    dispatch(resetPlayerSequence())
     await dispatch(
       playSequenceThunk({ completeSequence, skillLevel, sequenceLength }),
     );
@@ -257,13 +259,13 @@ export const playLevelThunk =
 export const playLongestSequenceThunk =
   () => async (dispatch: AppDispatch, getState: () => SimonState) => {
     const { gameStatus, skillLevel, longestSequence } = getState();
-    if (gameStatus === GAME_STATUS.SHOWING) {
+    if (gameStatus !== GAME_STATUS.IDLE) {
       return;
     }
+    dispatch(setStatus(GAME_STATUS.SHOWING));
     const longestSequenceInMemory = getLongestSequenceInMemory({
       longestSequenceInState: longestSequence,
     });
-    dispatch(setStatus(GAME_STATUS.SHOWING));
     // Pause before reproducing
     await sleep(
       getInterval({
@@ -294,10 +296,12 @@ export const handleClickColorButtonThunk =
       playerSequence: previousPlayerSequence,
       sequenceLength,
       gameMode,
+      gameStatus
     } = getState();
     if (
       previousPlayerSequence.length >= sequenceLength ||
-      gameMode === GAME_MODE.OFF
+      gameMode === GAME_MODE.OFF ||
+      gameStatus !== GAME_STATUS.WAITING
     ) {
       return;
     }

@@ -2,8 +2,6 @@ import { useSelector, useDispatch } from "react-redux";
 import styles from "./SettingButtons.module.scss";
 import {
   GAME_STATUS,
-  playLevelThunk,
-  playLongestSequenceThunk,
   setGameMode,
   setSkillLevel,
   SKILL_LEVEL,
@@ -16,6 +14,7 @@ import SwitchButton from "@/components/SwitchButton/SwitchButton";
 import GameName from "@/components/GameName/GameName";
 import { useSnackbar } from "@/components/SnackbarProvider/SnackbarProvider";
 import { getSnackbarInfo } from "@/utils/snackbar";
+import { playLevelThunk, playLongestSequenceThunk } from "@/utils/thunks";
 
 const SettingButtons = () => {
   const dispatch = useDispatch<AppDispatch>();
