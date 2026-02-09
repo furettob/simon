@@ -45,10 +45,9 @@ const ColorButtons = () => {
             <div className={classNames(styles.light, styles.light1)} />
             <div className={classNames(styles.light, styles.light2)} />
             <div
-              className={classNames(
-                styles.offColor,
-                `bgColor--${color.toLowerCase()}`,
-              )}
+              className={
+                styles.offColor
+              }
             />
           </div>
         ))}
