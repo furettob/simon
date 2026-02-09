@@ -51,11 +51,11 @@ export const LONGEST_SEQUENCE_MEMORY_KEY = "simonLongSeq2";
 export const getLongestSequenceInMemory = ({
   longestSequenceInState,
 }: {
-  longestSequenceInState: number[];
+  longestSequenceInState: ColorIndex[];
 }) => {
   return longestSequenceInState.length > 0
     ? longestSequenceInState
     : (JSON.parse(
         localStorage.getItem(LONGEST_SEQUENCE_MEMORY_KEY) || "[]",
-      ) as number[]);
+      ) as ColorIndex[]);
 };

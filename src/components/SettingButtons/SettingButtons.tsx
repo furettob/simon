@@ -1,10 +1,13 @@
 import { useSelector, useDispatch } from "react-redux";
 import styles from "./SettingButtons.module.scss";
 import {
+  GAME_MODE,
+  GAME_STATUS,
   playLevelThunk,
   playLongestSequenceThunk,
   setGameMode,
   setSkillLevel,
+  SKILL_LEVEL,
 } from "@/utils/simonReducer";
 import type { SimonState, AppDispatch } from "@/utils/simonReducer";
 import classNames from "classnames";
@@ -41,8 +44,8 @@ const SettingButtons = () => {
   };
 
   // Only possible to use change settings / start a game outside of a playing game
-  const isDeviceOff = ["OFF"].includes(gameStatus);
-  const isDevicIdle = ["IDLE"].includes(gameStatus);
+  const isDeviceOff = gameMode === "OFF";
+  const isDevicIdle = gameStatus === GAME_STATUS.IDLE;
 
   return (
     <div className={styles.settingButtonsWrapper}>
@@ -92,7 +95,7 @@ const SettingButtons = () => {
             />
             <SwitchButton
               label="skill level"
-              options={[1, 2, 3, 4]}
+              options={Object.values(SKILL_LEVEL)}
               checkedOption={skillLevel}
               onOptionClick={handleSkillLevelOptionClicked}
               disabled={!(isDevicIdle || isDeviceOff)}

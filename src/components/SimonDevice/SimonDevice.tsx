@@ -9,7 +9,7 @@ const SimonDevice = () => {
   const { showSnackbar } = useSnackbar();
   useEffect(() => {
     showSnackbar(getSnackbarInfo({ snackbarKey: "idleHint" }));
-  }, []);
+  }, [showSnackbar]);
   return (
     <div className={styles.simonDeviceWrapper}>
       <div className={styles.topShell}>
