@@ -1,0 +1,75 @@
+@use "@/assets/mixins.scss" as *;
+
+.contentWrapper {
+  padding: 1em 0.5em;
+}
+
+.contentStack {
+  padding: 1em;
+}
+
+.title {
+  @include fontFaceKellySlab;
+  color: $color-rubber-red;
+  font-size: 1.4em;
+  text-align: center;
+  flex-grow: 1;
+}
+
+.closeButton {
+  color: $color-rubber-red;
+  font-weight: bold;
+  background-color: unset;
+  border: none;
+
+  &:hover {
+    background-color: $color-lighter-grey;
+  }
+}
+
+.image {
+  width: 100%;
+  border: 2px black solid;
+}
+
+.imageWrapper {
+  flex-grow: 2;
+  width: 30%;
+}
+
+.text {
+  flex-grow: 4;
+  width: 70%;
+}
+
+.redDivider {
+  width: 80%;
+  margin: auto;
+  color: $color-rubber-red;
+}
+
+.subtitle {
+  @include fontFaceKellySlab;
+  font-size: 1.2em;
+}
+
+.logoContainer {
+  text-align: center;
+  width: 18%;
+  padding: 0.5em;
+  font-size: 1em;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1em;
+  text-decoration: none;
+  color: unset;
+
+  &:hover {
+    background-color: $color-lighter-grey;
+  }
+
+  & img {
+    width: auto;
+  }
+}
