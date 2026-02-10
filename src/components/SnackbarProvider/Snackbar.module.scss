@@ -1,4 +1,5 @@
-@import "@/assets/mixins.scss";
+@use "@/assets/mixins.scss" as *;
+@use 'sass:map';
 
 .transitionWrapper {
   display: flex;
@@ -33,6 +34,7 @@
   color: $color-white;
   position: relative;
   display: inline-block;
+  max-width: 64%;
   z-index: 9999;
   transform: translate(-50%, -50%);
   top: 50%;
@@ -70,9 +72,9 @@
 
   @each $snackbarType, $values in $colorSettings {
     &.#{$snackbarType} {
-      background-color: #{map-get($values, light)};
-      border-color: #{map-get($values, dark)};
-      color: #{map-get($values, dark)};
+      background-color: #{map.get($values, light)};
+      border-color: #{map.get($values, dark)};
+      color: #{map.get($values, dark)};
     }
   }
 

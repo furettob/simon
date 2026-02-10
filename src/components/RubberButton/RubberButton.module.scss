@@ -1,4 +1,4 @@
-@import "@/assets/mixins.scss";
+@use "@/assets/mixins.scss" as *;
 
 .blue {
   --mainColor: #{$color-rubber-blue};

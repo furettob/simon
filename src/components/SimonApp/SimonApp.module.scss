@@ -1,3 +1,12 @@
 .container {
   padding: 1em;
+  position: relative;
+}
+
+.dashboardWrapper {
+  position: absolute;
+  padding: 1em;
+  left: 0;
+  top: 60%;
+  transform: translate(0, -50%);
 }

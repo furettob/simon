@@ -1,4 +1,6 @@
-@import "@/assets/mixins.scss";
+@use "@/assets/mixins.scss" as *;
+@use 'sass:map';
+
 
 .colorButtonsWrapper {
   position: relative;
@@ -18,16 +20,16 @@
 
 /* BUTTON COLORS */
 $colorSettings: (
-  red: (main: $color-button-red, light: $color-button-red-light),
-  blue: (main: $color-button-blue, light: $color-button-blue-light),
-  yellow: (main: $color-button-yellow, light: $color-button-yellow-light),
-  green: (main: $color-button-green, light: $color-button-green-light)
+  "red": (main: $color-button-red, light: $color-button-red-light),
+  "blue": (main: $color-button-blue, light: $color-button-blue-light),
+  "yellow": (main: $color-button-yellow, light: $color-button-yellow-light),
+  "green": (main: $color-button-green, light: $color-button-green-light)
 );
 
-@each $color, $values in $colorSettings {
-  .colorButton--#{$color} {
-    --mainColor: #{map-get($values, main)};
-    --lightColor: #{map-get($values, light)};
+@each $colorName, $values in $colorSettings {
+  .colorButton--#{$colorName} {
+    --mainColor: #{map.get($values, main)};
+    --lightColor: #{map.get($values, light)};
   }
 }
 
