@@ -47,6 +47,7 @@ export const generateCompleteSequence = (sequenceLength: number): ColorIndex[] =
 };
 
 export const LONGEST_SEQUENCE_MEMORY_KEY = "simonLongSeq";
+export const LAST_VICTORY_MEMORY_KEY = "simonLongSeq";
 
 export const getLongestSequenceInMemory = ({
   longestSequenceInState,
@@ -57,5 +58,18 @@ export const getLongestSequenceInMemory = ({
     ? longestSequenceInState
     : (JSON.parse(
         localStorage.getItem(LONGEST_SEQUENCE_MEMORY_KEY) || "[]",
+      ) as ColorIndex[]);
+};
+
+// TODO use it to save/read last win
+export const getLastVictoryInMemory = ({
+  longestSequenceInState,
+}: {
+  longestSequenceInState: ColorIndex[];
+}) => {
+  return longestSequenceInState.length > 0
+    ? longestSequenceInState
+    : (JSON.parse(
+        localStorage.getItem(LAST_VICTORY_MEMORY_KEY) || "",
       ) as ColorIndex[]);
 };
