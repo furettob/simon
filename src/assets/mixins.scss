@@ -24,14 +24,21 @@ background: -webkit-linear-gradient(
 
 @font-face {
   font-family: "bebasNeue";
-  src: url("./fonts/Bebas_Neue/BebasNeue-Regular.ttf") format("truetype");
+  src: url("./fonts/BebasNeue/BebasNeue-Regular.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
   font-family: "kellySlab";
-  src: url("./fonts/Kelly_Slab/KellySlab-Regular.ttf") format("truetype");
+  src: url("./fonts/KellySlab/KellySlab-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "alarmClock";
+  src: url("./fonts/AlarmClock/AlarmClock.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }
@@ -46,6 +53,10 @@ background: -webkit-linear-gradient(
 
 @mixin fontFaceKellySlab {
   font-family: 'kellySlab', sans-serif;
+}
+
+@mixin fontFaceAlarmClock {
+  font-family: 'alarmClock', sans-serif;
 }
 
 // COLORS

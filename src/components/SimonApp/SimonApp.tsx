@@ -3,7 +3,7 @@ import styles from "./SimonApp.module.scss";
 import SimonDevice from "@/components/SimonDevice/SimonDevice";
 import { SnackbarProvider } from "@/components/SnackbarProvider/SnackbarProvider";
 import { ViewportProvider } from "../ViewportProvider/ViewportProvider";
-import Dashboard from "../Dashboard/Dashboard";
+import Dashboard from "@/components/Dashboard/Dashboard";
 
 const SimonGame = () => (
   <ViewportProvider>
@@ -15,7 +15,7 @@ const SimonGame = () => (
       >
         <SimonDevice />
         <div className={styles.dashboardWrapper}>
-          <Dashboard/>
+          <Dashboard />
         </div>
       </Stack>
     </SnackbarProvider>

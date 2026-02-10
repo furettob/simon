@@ -1,0 +1,32 @@
+@use "@/assets/mixins.scss" as *;
+
+.item {
+  font-size: 1.4em;
+  display: flex;
+  width: 2.4em;
+  height: 2.4em;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.4s ease-out;
+  border-radius: 4px;
+  background-color: $color-absolute-black-alpha;
+
+  &:hover {
+    transform: scale(1.2);
+  }
+}
+
+.level {
+  @include fontFaceAlarmClock;
+  text-align: center;
+  color: $color-rubber-red;
+  line-height: 0.8;
+}
+
+.share {
+  color: $color-button-green;
+}
+
+.info {
+  color: $color-button-blue-light;
+}

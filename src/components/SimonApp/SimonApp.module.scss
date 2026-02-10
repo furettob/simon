@@ -1,12 +1,16 @@
 .container {
   padding: 1em;
   position: relative;
+  width: 100%;
+  max-width: 592px;
+  box-sizing: border-box;
+  margin: auto;
 }
 
 .dashboardWrapper {
   position: absolute;
   padding: 1em;
   left: 0;
-  top: 60%;
+  top: 70%;
   transform: translate(0, -50%);
 }
