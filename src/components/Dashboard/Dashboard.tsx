@@ -26,10 +26,10 @@ const Dashboard = () => {
     });
     const introText =
       longestSequence.length >= 5
-        ? `I reached level ${longestSequence.length} at 'Simon Says' game!`
-        : `I just played 'Simon Says' game!`;
+        ? `80s nostalgia! I reached level ${longestSequence.length} at 'Simon Says' game!`
+        : `80s nostalgia! I just played 'Simon Says' game!`;
     const title = `80s nostalgia!`;
-    const text = `${introText} Try it at https://furettob.github.io/simon ${COLORS_EMOJI[0]}${COLORS_EMOJI[1]}${COLORS_EMOJI[2]}${COLORS_EMOJI[3]}`;
+    const text = `${introText} Try it for a blast from the past ${COLORS_EMOJI[0]}${COLORS_EMOJI[1]}${COLORS_EMOJI[2]}${COLORS_EMOJI[3]}`;
 
     // Try native share first
     if (navigator.share) {
