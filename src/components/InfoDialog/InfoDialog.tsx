@@ -40,7 +40,7 @@ const InfoDialog = ({
           </Stack>
           <div>
             <p>
-              <a href="https://github.com/furettob/simon">Side project</a>{" "}
+              <a target="_blank" href="https://github.com/furettob/simon">Side project</a>{" "}
               implemented with: React + Redux, thunks, SCSS, Mui.
             </p>
             <p>
@@ -75,7 +75,7 @@ const InfoDialog = ({
             </Stack>
             <p>
               Simon Game (<a
-                href="https://en.wikipedia.org/wiki/Simon_(game)"
+                target="_blank" href="https://en.wikipedia.org/wiki/Simon_(game)"
                 aria-label="Simon wiki page"
               >
                 Wikipedia
@@ -89,24 +89,24 @@ const InfoDialog = ({
           <div>
             <p className={styles.subtitle}>For more elctronic fun...</p>
             <Stack direction="row" justifyContent="space-between" >
-              <a className={styles.logoContainer} href="https://react.dev/">
+              <a className={styles.logoContainer} target="_blank" href="https://react.dev/">
                   <img src={ReactLogo} alt="React" />
                   <span>React</span>
               </a>
-               <a className={styles.logoContainer} href="https://redux.js.org/">
+               <a className={styles.logoContainer} target="_blank" href="https://redux.js.org/">
                   <img src={ReduxLogo} alt="Redux"/>
                   <span>Redux</span>
               </a>
-              <a className={styles.logoContainer} href="https://sass-lang.com/">
+              <a className={styles.logoContainer} target="_blank" href="https://sass-lang.com/">
                   <img src={SassLogo} alt="Sass"/>
                   <span>Sass</span>
               </a>
-               <a className={styles.logoContainer} href="https://mui.com/">
+               <a className={styles.logoContainer} target="_blank" href="https://mui.com/">
                   <img src={MuiLogo} alt="Mui"/>
                   <span>Mui</span>
               </a>
             </Stack>
-            <p>Hosted on <a href="https://docs.github.com/en/pages">GitHub Pages</a>. Tracked with <a href="https://developers.google.com/analytics">GA4</a>. Made with fun by <a href="https://github.com/furettob/">FurettoB</a>.</p>
+            <p>Hosted on <a target="_blank" href="https://docs.github.com/en/pages">GitHub Pages</a>. Tracked with <a target="_blank" href="https://developers.google.com/analytics">GA4</a>. Made with fun by <a target="_blank" href="https://github.com/furettob/">FurettoB</a>.</p>
           </div>
         </Stack>
       </div>
